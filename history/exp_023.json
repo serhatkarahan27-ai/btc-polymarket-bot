@@ -1,0 +1,31 @@
+{
+  "experiment": 23,
+  "timestamp": "2026-03-14T01:05:23.166649",
+  "config": {
+    "dry_mode": true,
+    "trade_size_usd": 5.0,
+    "window_minutes": 15,
+    "backtest_candles": 1000,
+    "candle_interval": "1m",
+    "direction_mode": "momentum",
+    "momentum_lookback": 10,
+    "entry_price": 0.48,
+    "stop_loss": 0.4,
+    "take_profit": 0.6,
+    "use_stop_loss": true,
+    "use_take_profit": true,
+    "sizing_mode": "fixed",
+    "kelly_fraction": 0.25,
+    "martingale_multiplier": 1.5,
+    "max_position_usd": 20.0
+  },
+  "score": 0.6308,
+  "win_rate": 0.6308,
+  "wins": 41,
+  "losses": 24,
+  "trades": 65,
+  "total_pnl_usd": 47.9251,
+  "avg_signal_strength": 0.0,
+  "decision": "DISCARD",
+  "best_score_before": 0.7692
+}
