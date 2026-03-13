@@ -32,17 +32,17 @@ CONFIG = {
     "backtest_candles": 1000,       # Backtest icin kac 1m mum (~16 saat)
     "candle_interval": "1m",        # Binance mum araligi
     # --- Indikatör parametreleri ---
-    "rsi_period": 9,                # Kisa RSI (15dk icin daha hassas)
-    "rsi_overbought": 60,           # Daha dusuk asiri alim esigi
-    "rsi_oversold": 40,             # Daha yuksek asiri satim esigi
-    "fast_ma": 5,                   # 5-mum hizli MA
-    "slow_ma": 20,                  # 20-mum yavas MA
-    "momentum_period": 10,          # 10-mum momentum
+    "rsi_period": 9,                # Kisa RSI
+    "rsi_overbought": 55,           # Siki esik — erken tetikle
+    "rsi_oversold": 45,             # Siki esik — erken tetikle
+    "fast_ma": 5,                   # Base
+    "slow_ma": 20,                  # Base
+    "momentum_period": 10,          # Base
     # --- Sinyal agirliklari ---
-    "weight_rsi": 0.5,              # RSI biraz daha guclu
-    "weight_ma": 1.5,               # MA hafifletildi
-    "weight_momentum": 1.0,         # Momentum guclendirildi
-    "signal_threshold": 0.15,       # Daha dusuk esik (daha fazla trade)
+    "weight_rsi": 2.5,              # RSI DOMINANT (mean reversion)
+    "weight_ma": 0.5,               # MA cok hafif
+    "weight_momentum": 0.5,         # Momentum cok hafif
+    "signal_threshold": 0.25,       # Yuksek esik — sadece RSI extreme
     "volume_filter": True,          # Volume filtresi ACIK
 }
 # ============================================================
