@@ -1,0 +1,332 @@
+[
+  {
+    "timestamp": "2026-03-15T00:01:08.191202",
+    "block_ts": 1773522000,
+    "market": "Bitcoin Up or Down - March 14, 5:00PM-5:15PM ET",
+    "slug": "btc-updown-15m-1773522000",
+    "direction": "DOWN",
+    "token": "DOWN",
+    "btc_entry": 70805.71,
+    "btc_exit": 70784.76,
+    "entry_ask": 0.99,
+    "exit_price": 0.01,
+    "exit_reason": "stop_loss",
+    "exit_minute": 1,
+    "tokens_bought": 5.0505,
+    "trade_size_usd": 5.0,
+    "pnl_usd": -4.9495,
+    "roi_pct": -98.99,
+    "win": false,
+    "min_token": 0.01,
+    "max_token": 0.99,
+    "momentum_pct": -0.0055,
+    "entry_spread": 0.98,
+    "up_orderbook_snapshot": {
+      "bids": [
+        {
+          "price": 0.01,
+          "size": 15890.62
+        },
+        {
+          "price": 0.02,
+          "size": 8039.98
+        },
+        {
+          "price": 0.03,
+          "size": 5547.01
+        },
+        {
+          "price": 0.04,
+          "size": 1590.0
+        },
+        {
+          "price": 0.05,
+          "size": 6266.0
+        }
+      ],
+      "asks": [
+        {
+          "price": 0.99,
+          "size": 16210.63
+        },
+        {
+          "price": 0.98,
+          "size": 8083.38
+        },
+        {
+          "price": 0.97,
+          "size": 5613.39
+        },
+        {
+          "price": 0.96,
+          "size": 1603.61
+        },
+        {
+          "price": 0.95,
+          "size": 6291.0
+        }
+      ],
+      "best_bid": 0.01,
+      "best_bid_size": 15890.62,
+      "best_ask": 0.99,
+      "best_ask_size": 16210.63,
+      "spread": 0.98
+    },
+    "down_orderbook_snapshot": {
+      "bids": [
+        {
+          "price": 0.01,
+          "size": 16260.63
+        },
+        {
+          "price": 0.02,
+          "size": 8033.38
+        },
+        {
+          "price": 0.03,
+          "size": 5563.39
+        },
+        {
+          "price": 0.04,
+          "size": 1583.61
+        },
+        {
+          "price": 0.05,
+          "size": 6241.0
+        }
+      ],
+      "asks": [
+        {
+          "price": 0.99,
+          "size": 16843.95
+        },
+        {
+          "price": 0.98,
+          "size": 8089.98
+        },
+        {
+          "price": 0.97,
+          "size": 5547.01
+        },
+        {
+          "price": 0.96,
+          "size": 1590.0
+        },
+        {
+          "price": 0.95,
+          "size": 6351.0
+        }
+      ],
+      "best_bid": 0.01,
+      "best_bid_size": 16260.63,
+      "best_ask": 0.99,
+      "best_ask_size": 16843.95,
+      "spread": 0.98
+    },
+    "config": {
+      "entry_price": 0.48,
+      "stop_loss": 0.4,
+      "take_profit": 0.6,
+      "direction_mode": "momentum",
+      "momentum_lookback": 10,
+      "trade_size_usd": 5.0,
+      "window_minutes": 15,
+      "early_entry_seconds": 3,
+      "max_wait_minutes": 20
+    }
+  },
+  {
+    "timestamp": "2026-03-15T00:16:17.848459",
+    "block_ts": 1773522900,
+    "market": "Bitcoin Up or Down - March 14, 5:15PM-5:30PM ET",
+    "slug": "btc-updown-15m-1773522900",
+    "direction": "DOWN",
+    "token": "DOWN",
+    "btc_entry": 70663.47,
+    "entry_ask": 0.99,
+    "limit_price": 0.5,
+    "exit_reason": "no_fill",
+    "fill_wait_secs": 65,
+    "pnl_usd": 0,
+    "win": false,
+    "skipped": true,
+    "momentum_pct": -0.1031,
+    "config": {
+      "entry_price": 0.48,
+      "stop_loss": 0.4,
+      "take_profit": 0.6,
+      "direction_mode": "momentum",
+      "momentum_lookback": 10,
+      "trade_size_usd": 5.0,
+      "window_minutes": 15,
+      "early_entry_seconds": 3,
+      "max_wait_minutes": 20,
+      "limit_price": 0.5,
+      "max_fill_wait_secs": 300,
+      "fill_check_interval": 5,
+      "max_spread_pct": 10.0,
+      "min_book_depth": 3,
+      "min_ask_size": 5,
+      "use_limit_orders": true
+    }
+  },
+  {
+    "timestamp": "2026-03-15T00:36:16.905763",
+    "block_ts": 1773523800,
+    "market": "Bitcoin Up or Down - March 14, 5:30PM-5:45PM ET",
+    "slug": "btc-updown-15m-1773523800",
+    "direction": "DOWN",
+    "btc_entry": 70690.42,
+    "btc_exit": 70685.98,
+    "entry_price_actual": 0.485,
+    "exit_price": 0.385,
+    "exit_reason": "stop_loss",
+    "exit_minute": 6,
+    "tokens_bought": 10.3093,
+    "trade_size_usd": 5.0,
+    "pnl_usd": -1.0309,
+    "roi_pct": -20.62,
+    "win": false,
+    "skipped": false,
+    "min_token": 0.385,
+    "max_token": 0.485,
+    "momentum_pct": -0.0005,
+    "amm_up_price": 0.515,
+    "amm_down_price": 0.485,
+    "spread_pct": 0.0,
+    "order_type": "LIMIT_AMM",
+    "limit_price": 0.5,
+    "fill_wait_secs": 0,
+    "risk_reward": 1.35,
+    "config": {
+      "entry_price": 0.5,
+      "stop_loss": 0.4,
+      "take_profit": 0.6,
+      "direction_mode": "momentum",
+      "momentum_lookback": 10,
+      "trade_size_usd": 5.0,
+      "window_minutes": 15,
+      "early_entry_seconds": 3,
+      "max_wait_minutes": 20,
+      "limit_price": 0.5,
+      "max_fill_wait_secs": 300,
+      "fill_check_interval": 5,
+      "max_spread_pct": 10.0,
+      "min_entry_price": 0.35,
+      "max_entry_price": 0.6
+    }
+  },
+  {
+    "timestamp": "2026-03-15T00:48:25.897937",
+    "block_ts": 1773524700,
+    "market": "Bitcoin Up or Down - March 14, 5:45PM-6:00PM ET",
+    "slug": "btc-updown-15m-1773524700",
+    "direction": "UP",
+    "btc_entry": 70738.79,
+    "btc_exit": 70736.75,
+    "entry_price_actual": 0.485,
+    "exit_price": 0.355,
+    "exit_reason": "stop_loss",
+    "exit_minute": 3,
+    "tokens_bought": 10.3093,
+    "trade_size_usd": 5.0,
+    "pnl_usd": -1.3402,
+    "roi_pct": -26.8,
+    "win": false,
+    "skipped": false,
+    "min_token": 0.355,
+    "max_token": 0.485,
+    "momentum_pct": 0.0699,
+    "amm_up_price": 0.505,
+    "amm_down_price": 0.495,
+    "spread_pct": 0.0,
+    "order_type": "LIMIT_AMM",
+    "limit_price": 0.5,
+    "fill_wait_secs": 15,
+    "risk_reward": 1.35,
+    "config": {
+      "entry_price": 0.5,
+      "stop_loss": 0.4,
+      "take_profit": 0.6,
+      "direction_mode": "momentum",
+      "momentum_lookback": 10,
+      "trade_size_usd": 5.0,
+      "window_minutes": 15,
+      "early_entry_seconds": 3,
+      "max_wait_minutes": 20,
+      "limit_price": 0.5,
+      "max_fill_wait_secs": 300,
+      "fill_check_interval": 5,
+      "max_spread_pct": 10.0,
+      "min_entry_price": 0.35,
+      "max_entry_price": 0.6,
+      "min_momentum_pct": 0.05
+    }
+  },
+  {
+    "timestamp": "2026-03-15T01:00:01.424508",
+    "block_ts": 1773525600,
+    "market": "N/A",
+    "slug": "N/A",
+    "direction": "UP",
+    "btc_entry": 70799.99,
+    "amm_price": null,
+    "limit_price": 0.5,
+    "exit_reason": "weak_momentum",
+    "momentum_pct": 0.0379,
+    "pnl_usd": 0,
+    "win": false,
+    "skipped": true,
+    "config": {
+      "entry_price": 0.5,
+      "stop_loss": 0.4,
+      "take_profit": 0.6,
+      "direction_mode": "momentum",
+      "momentum_lookback": 10,
+      "trade_size_usd": 5.0,
+      "window_minutes": 15,
+      "early_entry_seconds": 3,
+      "max_wait_minutes": 20,
+      "limit_price": 0.5,
+      "max_fill_wait_secs": 300,
+      "fill_check_interval": 5,
+      "max_spread_pct": 10.0,
+      "min_entry_price": 0.35,
+      "max_entry_price": 0.6,
+      "min_momentum_pct": 0.05
+    }
+  },
+  {
+    "timestamp": "2026-03-15T01:30:06.691227",
+    "block_ts": 1773527400,
+    "market": "N/A",
+    "slug": "N/A",
+    "direction": "UP",
+    "btc_entry": 70736.4,
+    "amm_price": null,
+    "limit_price": 0.5,
+    "exit_reason": "weak_momentum",
+    "momentum_pct": 0.0127,
+    "pnl_usd": 0,
+    "win": false,
+    "skipped": true,
+    "config": {
+      "entry_price": 0.5,
+      "stop_loss": 0.4,
+      "take_profit": 0.6,
+      "direction_mode": "momentum",
+      "momentum_lookback": 10,
+      "trade_size_usd": 5.0,
+      "window_minutes": 15,
+      "early_entry_seconds": 3,
+      "max_wait_minutes": 20,
+      "limit_price": 0.5,
+      "max_fill_wait_secs": 300,
+      "fill_check_interval": 5,
+      "max_spread_pct": 10.0,
+      "min_entry_price": 0.35,
+      "max_entry_price": 0.6,
+      "min_momentum_pct": 0.05
+    }
+  }
+]

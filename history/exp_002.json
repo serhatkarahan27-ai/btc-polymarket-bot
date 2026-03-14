@@ -1,0 +1,30 @@
+{
+  "experiment": 2,
+  "timestamp": "2026-03-13T23:44:37.069749",
+  "config": {
+    "dry_mode": true,
+    "trade_size_usd": 5.0,
+    "window_minutes": 15,
+    "backtest_candles": 200,
+    "candle_interval": "1m",
+    "rsi_period": 14,
+    "rsi_overbought": 70,
+    "rsi_oversold": 30,
+    "fast_ma": 5,
+    "slow_ma": 20,
+    "momentum_period": 10,
+    "weight_rsi": 1.0,
+    "weight_ma": 1.0,
+    "weight_momentum": 1.0,
+    "signal_threshold": 0.3
+  },
+  "score": 0.4,
+  "win_rate": 0.4,
+  "wins": 2,
+  "losses": 3,
+  "trades": 5,
+  "total_pnl_usd": -0.0051,
+  "avg_signal_strength": 0.4703,
+  "decision": "KEEP",
+  "best_score_before": 0.0
+}

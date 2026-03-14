@@ -55,6 +55,30 @@ CLOB_BASE = "https://clob.polymarket.com"
 
 
 # ============================================================
+# API CACHE - ayni veriyi tekrar cekmemek icin
+# ============================================================
+_cache = {}
+_cache_ttl = {}
+
+def _cache_get(key, ttl_seconds=60):
+    """Cache'den veri al. TTL dolmussa None dondur."""
+    if key in _cache and key in _cache_ttl:
+        if time.time() - _cache_ttl[key] < ttl_seconds:
+            return _cache[key]
+    return None
+
+def _cache_set(key, value):
+    """Cache'e veri yaz."""
+    _cache[key] = value
+    _cache_ttl[key] = time.time()
+
+def clear_cache():
+    """Tum cache'i temizle."""
+    _cache.clear()
+    _cache_ttl.clear()
+
+
+# ============================================================
 # BINANCE VERI
 # ============================================================
 
@@ -63,6 +87,12 @@ def fetch_binance_klines(symbol="BTCUSDT", interval=None, limit=None):
         interval = CONFIG["candle_interval"]
     if limit is None:
         limit = CONFIG["backtest_candles"]
+
+    cache_key = f"klines_{symbol}_{interval}_{limit}"
+    cached = _cache_get(cache_key, ttl_seconds=30)
+    if cached is not None:
+        return cached
+
     resp = requests.get(
         f"{BINANCE_BASE}/klines",
         params={"symbol": symbol, "interval": interval, "limit": limit},
@@ -79,6 +109,7 @@ def fetch_binance_klines(symbol="BTCUSDT", interval=None, limit=None):
             "close": float(k[4]),
             "volume": float(k[5]),
         })
+    _cache_set(cache_key, candles)
     return candles
 
 
@@ -87,9 +118,15 @@ def fetch_binance_klines(symbol="BTCUSDT", interval=None, limit=None):
 # ============================================================
 
 def fetch_polymarket_market(slug):
+    cache_key = f"market_{slug}"
+    cached = _cache_get(cache_key, ttl_seconds=60)
+    if cached is not None:
+        return cached
+
     try:
         resp = requests.get(f"{GAMMA_BASE}/markets/slug/{slug}", timeout=10)
         if resp.status_code == 404:
+            _cache_set(cache_key, None)
             return None
         resp.raise_for_status()
         m = resp.json()
@@ -102,7 +139,7 @@ def fetch_polymarket_market(slug):
         prices = m.get("outcomePrices", "[]")
         if isinstance(prices, str):
             prices = json.loads(prices)
-        return {
+        result = {
             "id": m.get("id"),
             "question": m.get("question", ""),
             "slug": slug,
@@ -111,20 +148,29 @@ def fetch_polymarket_market(slug):
             "prices": prices,
             "closed": m.get("closed", False),
         }
+        _cache_set(cache_key, result)
+        return result
     except Exception as e:
         return None
 
 
 def fetch_orderbook(token_id):
+    cache_key = f"book_{token_id}"
+    cached = _cache_get(cache_key, ttl_seconds=10)
+    if cached is not None:
+        return cached
+
     try:
         resp = requests.get(f"{CLOB_BASE}/book", params={"token_id": token_id}, timeout=5)
         book = resp.json()
         bids = book.get("bids", [])
         asks = book.get("asks", [])
-        return {
+        result = {
             "best_bid": float(bids[0]["price"]) if bids else None,
             "best_ask": float(asks[0]["price"]) if asks else None,
         }
+        _cache_set(cache_key, result)
+        return result
     except:
         return {"best_bid": None, "best_ask": None}
 

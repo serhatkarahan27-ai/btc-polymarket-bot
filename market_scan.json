@@ -1,0 +1,113 @@
+{
+  "timestamp": "2026-03-15T00:17:33.262577",
+  "total_found": 21,
+  "tradeable": 0,
+  "markets": [
+    {
+      "slug": "btc-updown-15m-1773522000",
+      "question": "Bitcoin Up or Down - March 14, 5:00PM-5:15PM ET",
+      "interval": "15m"
+    },
+    {
+      "slug": "btc-updown-15m-1773522900",
+      "question": "Bitcoin Up or Down - March 14, 5:15PM-5:30PM ET",
+      "interval": "15m"
+    },
+    {
+      "slug": "btc-updown-15m-1773523800",
+      "question": "Bitcoin Up or Down - March 14, 5:30PM-5:45PM ET",
+      "interval": "15m"
+    },
+    {
+      "slug": "btc-updown-15m-1773524700",
+      "question": "Bitcoin Up or Down - March 14, 5:45PM-6:00PM ET",
+      "interval": "15m"
+    },
+    {
+      "slug": "btc-updown-15m-1773525600",
+      "question": "Bitcoin Up or Down - March 14, 6:00PM-6:15PM ET",
+      "interval": "15m"
+    },
+    {
+      "slug": "btc-updown-15m-1773526500",
+      "question": "Bitcoin Up or Down - March 14, 6:15PM-6:30PM ET",
+      "interval": "15m"
+    },
+    {
+      "slug": "btc-updown-5m-1773522600",
+      "question": "Bitcoin Up or Down - March 14, 5:10PM-5:15PM ET",
+      "interval": "5m"
+    },
+    {
+      "slug": "btc-updown-5m-1773522900",
+      "question": "Bitcoin Up or Down - March 14, 5:15PM-5:20PM ET",
+      "interval": "5m"
+    },
+    {
+      "slug": "btc-updown-5m-1773523200",
+      "question": "Bitcoin Up or Down - March 14, 5:20PM-5:25PM ET",
+      "interval": "5m"
+    },
+    {
+      "slug": "btc-updown-5m-1773523500",
+      "question": "Bitcoin Up or Down - March 14, 5:25PM-5:30PM ET",
+      "interval": "5m"
+    },
+    {
+      "slug": "btc-updown-5m-1773523800",
+      "question": "Bitcoin Up or Down - March 14, 5:30PM-5:35PM ET",
+      "interval": "5m"
+    },
+    {
+      "slug": "btc-updown-5m-1773524100",
+      "question": "Bitcoin Up or Down - March 14, 5:35PM-5:40PM ET",
+      "interval": "5m"
+    },
+    {
+      "slug": "btc-updown-4h-1773518400",
+      "question": "Bitcoin Up or Down - March 14, 4:00PM-8:00PM ET",
+      "interval": "4h"
+    },
+    {
+      "slug": "btc-updown-4h-1773532800",
+      "question": "Bitcoin Up or Down - March 14, 8:00PM-12:00AM ET",
+      "interval": "4h"
+    },
+    {
+      "slug": "microstrategy-sells-any-bitcoin-by-december-31-2026",
+      "question": "MicroStrategy sells any Bitcoin by December 31, 2026?",
+      "interval": "event"
+    },
+    {
+      "slug": "microstrategy-sells-any-bitcoin-by-march-31-2026",
+      "question": "MicroStrategy sells any Bitcoin by March 31, 2026?",
+      "interval": "event"
+    },
+    {
+      "slug": "microstrategy-sells-any-bitcoin-by-june-30-2026",
+      "question": "MicroStrategy sells any Bitcoin by June 30, 2026?",
+      "interval": "event"
+    },
+    {
+      "slug": "will-bitcoin-hit-150k-by-march-31-2026",
+      "question": "Will Bitcoin hit $150k by March 31, 2026?",
+      "interval": "event"
+    },
+    {
+      "slug": "will-bitcoin-hit-150k-by-june-30-2026",
+      "question": "Will Bitcoin hit $150k by June 30, 2026?",
+      "interval": "event"
+    },
+    {
+      "slug": "will-bitcoin-hit-150k-by-december-31-2026",
+      "question": "Will Bitcoin hit $150k by December 31, 2026?",
+      "interval": "event"
+    },
+    {
+      "slug": "will-el-salvador-hold-1b-of-btc-by-december-31-2026",
+      "question": "Will El Salvador hold $1b+ of BTC by December 31, 2026?",
+      "interval": "event"
+    }
+  ],
+  "tradeable_details": []
+}
