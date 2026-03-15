@@ -1,0 +1,232 @@
+{
+  "configs": [
+    {
+      "name": "Config1",
+      "label": "SL=$0.45 TP=OFF always_up",
+      "sl": 0.45,
+      "tp": null,
+      "dir": "always_up",
+      "flip": false,
+      "total_trades": 2,
+      "wins": 2,
+      "total_pnl": 10.235,
+      "pnl_history": [
+        5.5263,
+        4.7087
+      ],
+      "wr": 100.0
+    },
+    {
+      "name": "Config2",
+      "label": "SL=$0.45 TP=OFF momentum",
+      "sl": 0.45,
+      "tp": null,
+      "dir": "momentum",
+      "flip": false,
+      "total_trades": 2,
+      "wins": 2,
+      "total_pnl": 10.235,
+      "pnl_history": [
+        5.5263,
+        4.7087
+      ],
+      "wr": 100.0
+    },
+    {
+      "name": "Config3",
+      "label": "SL=$0.45 TP=OFF momentum+flip",
+      "sl": 0.45,
+      "tp": null,
+      "dir": "momentum",
+      "flip": true,
+      "total_trades": 2,
+      "wins": 0,
+      "total_pnl": -1.2291,
+      "pnl_history": [
+        -0.6796,
+        -0.5495
+      ],
+      "wr": 0.0
+    },
+    {
+      "name": "Config4",
+      "label": "SL=$0.45 TP=OFF always_down",
+      "sl": 0.45,
+      "tp": null,
+      "dir": "always_down",
+      "flip": false,
+      "total_trades": 2,
+      "wins": 0,
+      "total_pnl": -1.2291,
+      "pnl_history": [
+        -0.6796,
+        -0.5495
+      ],
+      "wr": 0.0
+    },
+    {
+      "name": "Config5",
+      "label": "SL=$0.45 TP=$0.80 momentum+flip",
+      "sl": 0.45,
+      "tp": 0.8,
+      "dir": "momentum",
+      "flip": true,
+      "total_trades": 2,
+      "wins": 0,
+      "total_pnl": -1.2291,
+      "pnl_history": [
+        -0.6796,
+        -0.5495
+      ],
+      "wr": 0.0
+    }
+  ],
+  "windows": [
+    {
+      "window": 1,
+      "block_ts": 1773610200,
+      "timestamp": "2026-03-16T01:21:02.290544",
+      "btc_entry": 71765.06,
+      "btc_exit": 71862.64,
+      "actual_direction": "UP",
+      "momentum": "UP",
+      "momentum_pct": 0.0371,
+      "market": "Bitcoin Up or Down - March 15, 5:30PM-5:45PM ET",
+      "slug": "btc-updown-15m-1773610200",
+      "price_source": "CLOB_midpoint",
+      "status": "completed",
+      "trades": {
+        "Config1": {
+          "direction": "UP",
+          "entry_price": 0.475,
+          "tokens": 10.5263,
+          "sl": 0.45,
+          "tp": null,
+          "exit_price": 1.0,
+          "exit_reason": "expiry_win",
+          "pnl": 5.5263,
+          "exited": true
+        },
+        "Config2": {
+          "direction": "UP",
+          "entry_price": 0.475,
+          "tokens": 10.5263,
+          "sl": 0.45,
+          "tp": null,
+          "exit_price": 1.0,
+          "exit_reason": "expiry_win",
+          "pnl": 5.5263,
+          "exited": true
+        },
+        "Config3": {
+          "direction": "DOWN",
+          "entry_price": 0.515,
+          "tokens": 9.7087,
+          "sl": 0.45,
+          "tp": null,
+          "exit_price": 0.445,
+          "exit_reason": "stop_loss",
+          "pnl": -0.6796,
+          "exited": true
+        },
+        "Config4": {
+          "direction": "DOWN",
+          "entry_price": 0.515,
+          "tokens": 9.7087,
+          "sl": 0.45,
+          "tp": null,
+          "exit_price": 0.445,
+          "exit_reason": "stop_loss",
+          "pnl": -0.6796,
+          "exited": true
+        },
+        "Config5": {
+          "direction": "DOWN",
+          "entry_price": 0.515,
+          "tokens": 9.7087,
+          "sl": 0.45,
+          "tp": 0.8,
+          "exit_price": 0.445,
+          "exit_reason": "stop_loss",
+          "pnl": -0.6796,
+          "exited": true
+        }
+      }
+    },
+    {
+      "window": 2,
+      "block_ts": 1773613800,
+      "timestamp": "2026-03-16T02:11:43.948423",
+      "btc_entry": 71931.5,
+      "btc_exit": 73012.54,
+      "actual_direction": "UP",
+      "momentum": "UP",
+      "momentum_pct": 0.0958,
+      "market": "Bitcoin Up or Down - March 15, 6:30PM-6:45PM ET",
+      "slug": "btc-updown-15m-1773613800",
+      "price_source": "CLOB_midpoint",
+      "status": "completed",
+      "trades": {
+        "Config1": {
+          "direction": "UP",
+          "entry_price": 0.515,
+          "tokens": 9.7087,
+          "sl": 0.45,
+          "tp": null,
+          "exit_price": 1.0,
+          "exit_reason": "expiry_win",
+          "pnl": 4.7087,
+          "exited": true
+        },
+        "Config2": {
+          "direction": "UP",
+          "entry_price": 0.515,
+          "tokens": 9.7087,
+          "sl": 0.45,
+          "tp": null,
+          "exit_price": 1.0,
+          "exit_reason": "expiry_win",
+          "pnl": 4.7087,
+          "exited": true
+        },
+        "Config3": {
+          "direction": "DOWN",
+          "entry_price": 0.455,
+          "tokens": 10.989,
+          "sl": 0.45,
+          "tp": null,
+          "exit_price": 0.405,
+          "exit_reason": "stop_loss",
+          "pnl": -0.5495,
+          "exited": true
+        },
+        "Config4": {
+          "direction": "DOWN",
+          "entry_price": 0.455,
+          "tokens": 10.989,
+          "sl": 0.45,
+          "tp": null,
+          "exit_price": 0.405,
+          "exit_reason": "stop_loss",
+          "pnl": -0.5495,
+          "exited": true
+        },
+        "Config5": {
+          "direction": "DOWN",
+          "entry_price": 0.455,
+          "tokens": 10.989,
+          "sl": 0.45,
+          "tp": 0.8,
+          "exit_price": 0.405,
+          "exit_reason": "stop_loss",
+          "pnl": -0.5495,
+          "exited": true
+        }
+      }
+    }
+  ],
+  "status": "running",
+  "started": "2026-03-16T00:17:05.992714",
+  "target_windows": 5,
+  "last_update": "2026-03-16T02:11:43.951083"
+}

@@ -133,6 +133,43 @@ tr.best-row{background:#0d33211a;border-left:3px solid #3fb950}
     <div class="insight-box" id="wf-insight" style="margin-top:10px"></div>
   </div>
 
+  <!-- Live Validation -->
+  <div class="sec fw" id="val-section" style="display:none">
+    <h2>🔴 Live Multi-Config Validation (dry_mode=True)</h2>
+    <div class="cd-s" style="margin-bottom:8px" id="val-status">Status: idle</div>
+    <table>
+      <thead><tr>
+        <th>#</th><th>Config</th><th>SL</th><th>TP</th><th>Direction</th><th>Flip</th>
+        <th>Trades</th><th>Wins</th><th>WR%</th><th>Total PnL</th><th>PnL History</th><th></th>
+      </tr></thead>
+      <tbody id="val-table"></tbody>
+    </table>
+    <div style="margin-top:12px">
+      <h3 style="font-size:12px;margin-bottom:8px;color:#8b949e">Per-Window Results</h3>
+      <table>
+        <thead><tr>
+          <th>Win#</th><th>Time</th><th>BTC</th><th>Momentum</th><th>Actual</th>
+          <th>C1 PnL</th><th>C2 PnL</th><th>C3 PnL</th><th>C4 PnL</th><th>C5 PnL</th>
+        </tr></thead>
+        <tbody id="val-windows"></tbody>
+      </table>
+    </div>
+    <div class="insight-box" id="val-insight" style="margin-top:10px"></div>
+  </div>
+
+  <!-- Live Validation Trades Detail -->
+  <div class="sec fw" id="val-trades-section" style="display:none">
+    <h2>📋 Live Validation — Trade Details (Her Config × Her Pencere)</h2>
+    <div class="cd-s" style="margin-bottom:8px">Tüm config'lerin her penceredeki trade detayları</div>
+    <table>
+      <thead><tr>
+        <th>Win#</th><th>Config</th><th>Direction</th><th>Entry$</th><th>Exit$</th>
+        <th>Exit Reason</th><th>PnL</th><th>Cum.PnL</th><th>Result</th>
+      </tr></thead>
+      <tbody id="val-trades-detail"></tbody>
+    </table>
+  </div>
+
   <!-- Market Conditions -->
   <div class="sec">
     <h2>Strategy Performance by Market Condition</h2>
@@ -271,8 +308,9 @@ function fetchAll(){
     fetch('/api/btc_price').then(function(r){return r.json()}).catch(function(){return null}),
     fetch('/api/forward_test').then(function(r){return r.json()}).catch(function(){return null}),
     fetch('/api/window_trades').then(function(r){return r.json()}).catch(function(){return []}),
-    fetch('/api/optimizer').then(function(r){return r.json()}).catch(function(){return null})
-  ]).then(function(arr){return{last:arr[0],hist:arr[1],btc:arr[2],fwd:arr[3],wt:arr[4],opt:arr[5]}});
+    fetch('/api/optimizer').then(function(r){return r.json()}).catch(function(){return null}),
+    fetch('/api/validation').then(function(r){return r.json()}).catch(function(){return null})
+  ]).then(function(arr){return{last:arr[0],hist:arr[1],btc:arr[2],fwd:arr[3],wt:arr[4],opt:arr[5],val:arr[6]}});
 }
 
 function upd(D){
@@ -555,6 +593,118 @@ function upd(D){
     var wws=realWT.filter(function(t){return t.win}).length;
     var wpb=document.getElementById('wpb');
     if(realWT.length>0){var wwp=(wws/realWT.length*100).toFixed(1);wpb.innerHTML='<div class="pb-g" style="width:'+wwp+'%"></div><div class="pb-r" style="width:'+(100-wwp)+'%"></div>'}
+  }
+
+  // Live Validation
+  var V=D.val;
+  if(V&&!V.error&&V.configs&&V.configs.length>0){
+    document.getElementById('val-section').style.display='';
+    var statusTxt='Status: '+V.status;
+    if(V.target_windows)statusTxt+=' | Target: '+V.target_windows+' windows';
+    if(V.windows)statusTxt+=' | Completed: '+V.windows.length+'/'+V.target_windows;
+    if(V.last_update)statusTxt+=' | Updated: '+tt(V.last_update);
+    document.getElementById('val-status').textContent=statusTxt;
+
+    // Sort configs by PnL descending
+    var sortedCfgs=V.configs.slice().sort(function(a,b){return b.total_pnl-a.total_pnl});
+    var bestName=sortedCfgs[0].name;
+
+    var vtb=document.getElementById('val-table');
+    vtb.innerHTML=sortedCfgs.map(function(c,i){
+      var pnlCl=c.total_pnl>=0?'grn':'red';
+      var isBest=c.name===bestName;
+      var cls=isBest?'best-row':'';
+      var hist=(c.pnl_history||[]).map(function(p){
+        return'<span style="color:'+(p>=0?CL.g:CL.r)+';font-size:10px;margin:0 1px">$'+(p>=0?'+':'')+p.toFixed(0)+'</span>';
+      }).join(' ');
+      return'<tr class="'+cls+'"><td>'+(i+1)+'</td>'
+        +'<td>'+c.label+'</td>'
+        +'<td class="red">'+(c.sl!==null?'$'+c.sl.toFixed(2):'OFF')+'</td>'
+        +'<td class="grn">'+(c.tp!==null?'$'+c.tp.toFixed(2):'OFF')+'</td>'
+        +'<td><span class="bg '+(c.dir==='always_up'?'bg-u':c.dir==='always_down'?'bg-d':'bg-ex')+'">'+c.dir+'</span></td>'
+        +'<td>'+(c.flip?'<span class="cyn">Y</span>':'N')+'</td>'
+        +'<td>'+c.total_trades+'</td>'
+        +'<td>'+c.wins+'</td>'
+        +'<td>'+(c.wr||0).toFixed(1)+'%</td>'
+        +'<td class="'+pnlCl+'" style="font-weight:700">$'+(c.total_pnl>=0?'+':'')+c.total_pnl.toFixed(2)+'</td>'
+        +'<td>'+hist+'</td>'
+        +'<td>'+(isBest?'<span class="bg-best">LEADER</span>':'')+'</td></tr>';
+    }).join('');
+
+    // Per-window results table
+    var vwb=document.getElementById('val-windows');
+    vwb.innerHTML=(V.windows||[]).map(function(w){
+      if(w.status!=='completed')return'<tr><td>#'+w.window+'</td><td colspan="9" style="color:#8b949e">'+w.status+'</td></tr>';
+      var configNames=['Config1','Config2','Config3','Config4','Config5'];
+      var pnls=configNames.map(function(cn){
+        var t=w.trades[cn];
+        if(!t)return'<td>--</td>';
+        var cl=t.pnl>=0?'grn':'red';
+        return'<td class="'+cl+'">$'+(t.pnl>=0?'+':'')+t.pnl.toFixed(2)+' <span style="font-size:9px;color:#8b949e">'+(t.exit_reason||'').replace('_',' ')+'</span></td>';
+      }).join('');
+      return'<tr><td>#'+w.window+'</td>'
+        +'<td style="color:#8b949e">'+tt(w.timestamp)+'</td>'
+        +'<td>$'+(w.btc_entry||0).toLocaleString()+'</td>'
+        +'<td class="'+((w.momentum_pct||0)>=0?'grn':'red')+'">'+w.momentum+' ('+((w.momentum_pct||0)>=0?'+':'')+(w.momentum_pct||0).toFixed(3)+'%)</td>'
+        +'<td><span class="bg '+(w.actual_direction==='UP'?'bg-u':'bg-d')+'">'+w.actual_direction+'</span></td>'
+        +pnls+'</tr>';
+    }).join('');
+
+    // Insight
+    var vins=document.getElementById('val-insight');
+    if(V.status==='completed'){
+      var winner=sortedCfgs[0];
+      vins.innerHTML='<b>Validation Complete!</b> Winner: <span class="grn">'+winner.label+'</span> '
+        +'with PnL=$'+(winner.total_pnl>=0?'+':'')+winner.total_pnl.toFixed(2)
+        +' ('+winner.wins+'W/'+(winner.total_trades-winner.wins)+'L, WR='+(winner.wr||0).toFixed(1)+'%). '
+        +'Tested on '+V.target_windows+' live windows with dry_mode=True.';
+    }else if(V.status==='running'){
+      var leader=sortedCfgs[0];
+      vins.innerHTML='<b>Validation Running...</b> Current leader: <span class="org">'+leader.label+'</span> '
+        +'with PnL=$'+(leader.total_pnl>=0?'+':'')+leader.total_pnl.toFixed(2)
+        +' ('+V.windows.length+'/'+V.target_windows+' windows completed)';
+    }else{
+      vins.innerHTML='<b>Waiting for validation to start...</b>';
+    }
+
+    // Trade Details table (ayrı section)
+    if(V.windows&&V.windows.length>0){
+      document.getElementById('val-trades-section').style.display='';
+      var cumPnls={};
+      var allRows=[];
+      V.windows.forEach(function(w){
+        if(w.status!=='completed')return;
+        var configNames=['Config1','Config2','Config3','Config4','Config5'];
+        var configLabels={'Config1':'always_up','Config2':'momentum','Config3':'mom+flip','Config4':'always_down','Config5':'mom+flip TP$0.80'};
+        configNames.forEach(function(cn){
+          var t=w.trades[cn];
+          if(!t)return;
+          if(!cumPnls[cn])cumPnls[cn]=0;
+          cumPnls[cn]+=t.pnl;
+          var pnlCl=t.pnl>=0?'grn':'red';
+          var cumCl=cumPnls[cn]>=0?'grn':'red';
+          var dc=t.direction==='UP'?'bg-u':'bg-d';
+          var er=t.exit_reason||'?';
+          var erCl=er.indexOf('win')>=0||er==='take_profit'?'bg-w':'bg-l';
+          var erLbl=er==='stop_loss'?'SL':er==='take_profit'?'TP':er==='expiry_win'?'EXP-W':er==='expiry_loss'?'EXP-L':er;
+          var resCl=t.pnl>=0?'bg-w':'bg-l';
+          allRows.push('<tr>'
+            +'<td>#'+w.window+'</td>'
+            +'<td style="font-size:10px">'+(configLabels[cn]||cn)+'</td>'
+            +'<td><span class="bg '+dc+'">'+t.direction+'</span></td>'
+            +'<td>$'+t.entry_price.toFixed(3)+'</td>'
+            +'<td>$'+(t.exit_price||0).toFixed(3)+'</td>'
+            +'<td><span class="bg '+erCl+'">'+erLbl+'</span></td>'
+            +'<td class="'+pnlCl+'" style="font-weight:700">$'+(t.pnl>=0?'+':'')+t.pnl.toFixed(2)+'</td>'
+            +'<td class="'+cumCl+'">$'+(cumPnls[cn]>=0?'+':'')+cumPnls[cn].toFixed(2)+'</td>'
+            +'<td><span class="bg '+resCl+'">'+(t.pnl>=0?'WIN':'LOSS')+'</span></td>'
+            +'</tr>');
+        });
+        // Add separator row between windows
+        allRows.push('<tr style="border-top:2px solid #21262d"><td colspan="9" style="height:2px;padding:0"></td></tr>');
+      });
+      document.getElementById('val-trades-detail').innerHTML=allRows.join('');
+    }
   }
 }
 
