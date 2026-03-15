@@ -40,7 +40,8 @@
       "Bash(python -c \"import json; d=json.load\\(open\\(''polymarket_history.json'',''r''\\)\\); print\\(type\\(d\\)\\); print\\(len\\(d\\)\\); print\\(json.dumps\\(d[0],indent=2\\)\\); print\\(''---''\\); print\\(json.dumps\\(d[-1],indent=2\\)\\)\")",
       "Bash(python -c \"import json; d=json.load\\(open\\(''last_result.json'',''r''\\)\\); print\\(type\\(d\\)\\); ks=list\\(d.keys\\(\\)\\) if isinstance\\(d,dict\\) else [''list_len=%d''%len\\(d\\)]; print\\(ks[:20]\\)\")",
       "Bash(python -c \"import json; d=json.load\\(open\\(''forward_test.json'',''r''\\)\\); print\\(type\\(d\\)\\); print\\(json.dumps\\(d[:3] if isinstance\\(d,list\\) else d, indent=2\\)[:2000]\\)\")",
-      "Bash(python -c \"import json; d=json.load\\(open\\(''window_trades.json'',''r''\\)\\); print\\(type\\(d\\)\\); print\\(len\\(d\\)\\); print\\(json.dumps\\(d[:2],indent=2\\)[:2000]\\)\")"
+      "Bash(python -c \"import json; d=json.load\\(open\\(''window_trades.json'',''r''\\)\\); print\\(type\\(d\\)\\); print\\(len\\(d\\)\\); print\\(json.dumps\\(d[:2],indent=2\\)[:2000]\\)\")",
+      "Bash(python optimizer.py --backtest)"
     ]
   }
 }

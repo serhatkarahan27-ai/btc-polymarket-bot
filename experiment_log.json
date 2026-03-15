@@ -1,0 +1,33 @@
+[
+  {
+    "experiment": 1,
+    "timestamp": "2026-03-15T22:34:56.021232",
+    "config": {
+      "entry_price": 0.5,
+      "stop_loss": 0.45,
+      "take_profit": null,
+      "use_stop_loss": true,
+      "use_take_profit": false,
+      "direction_mode": "always_up",
+      "flip": false,
+      "trade_size_usd": 5.0
+    },
+    "backtest": {
+      "trades": 672,
+      "wins": 348,
+      "losses": 324,
+      "win_rate": 0.5179,
+      "total_pnl": 1578.0,
+      "avg_pnl": 2.3482,
+      "profit_factor": 10.7407,
+      "gross_profit": 1740.0,
+      "gross_loss": 162.0,
+      "max_drawdown": 3.0,
+      "sl_exits": 324,
+      "tp_exits": 0,
+      "exp_exits": 348
+    },
+    "live": null,
+    "decision": "BACKTEST_ONLY"
+  }
+]
