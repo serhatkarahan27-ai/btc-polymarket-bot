@@ -1,7 +1,46 @@
 {
   "permissions": {
     "allow": [
-      "Bash(unzip -o files.zip)"
+      "Bash(unzip -o files.zip)",
+      "Bash(python strategy.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python strategy.py)",
+      "Bash(curl -s \"https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=10\")",
+      "Bash(python -m json.tool)",
+      "Bash(curl -s \"https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100\")",
+      "Bash(curl -s \"https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100&offset=100\")",
+      "Bash(python -c \":*)",
+      "Bash(/dev/null echo:*)",
+      "Bash(curl -s \"https://gamma-api.polymarket.com/events?active=true&closed=false&limit=50\")",
+      "Bash(curl -s \"https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=200\")",
+      "Bash(curl -s \"https://gamma-api.polymarket.com/events?active=true&closed=false&limit=100\")",
+      "Bash(curl -s \"https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=200&offset=200\")",
+      "Bash(PYTHONIOENCODING=utf-8 python -c \":*)",
+      "Bash(PYTHONIOENCODING=utf-8 python evaluate.py)",
+      "Bash(python scan_markets.py)",
+      "Bash(python evaluate.py)",
+      "Bash(python find_15min.py)",
+      "WebFetch(domain:docs.polymarket.com)",
+      "Bash(python forward_test.py)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(PYTHONIOENCODING=utf-8 python window_trader.py)",
+      "Bash(powershell -c \"Get-Content ''C:\\\\Users\\\\karah\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-karah-OneDrive-Masa-st--5-min-arbitraj\\\\tasks\\\\bdi7nrsbw.output'' -ErrorAction SilentlyContinue\")",
+      "Bash(powershell -c \"Get-ChildItem ''C:\\\\Users\\\\karah\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-karah-OneDrive-Masa-st--5-min-arbitraj\\\\tasks\\\\'' | Select-Object Name,Length,LastWriteTime\")",
+      "Bash(python test_api.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python -u window_trader.py)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(python -u scan_markets.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python -u scan_markets.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python -u window_trader.py --continuous 5)",
+      "Bash(gh auth:*)",
+      "Bash(where gh:*)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/GitHub CLI\")",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth login --web --git-protocol https)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" repo create btc-polymarket-bot --private --source=. --remote=origin --push)",
+      "Bash(python -c \"import json; d=json.load\\(open\\(''polymarket_history.json'',''r''\\)\\); print\\(type\\(d\\)\\); print\\(len\\(d\\)\\); print\\(json.dumps\\(d[0],indent=2\\)\\); print\\(''---''\\); print\\(json.dumps\\(d[-1],indent=2\\)\\)\")",
+      "Bash(python -c \"import json; d=json.load\\(open\\(''last_result.json'',''r''\\)\\); print\\(type\\(d\\)\\); ks=list\\(d.keys\\(\\)\\) if isinstance\\(d,dict\\) else [''list_len=%d''%len\\(d\\)]; print\\(ks[:20]\\)\")",
+      "Bash(python -c \"import json; d=json.load\\(open\\(''forward_test.json'',''r''\\)\\); print\\(type\\(d\\)\\); print\\(json.dumps\\(d[:3] if isinstance\\(d,list\\) else d, indent=2\\)[:2000]\\)\")",
+      "Bash(python -c \"import json; d=json.load\\(open\\(''window_trades.json'',''r''\\)\\); print\\(type\\(d\\)\\); print\\(len\\(d\\)\\); print\\(json.dumps\\(d[:2],indent=2\\)[:2000]\\)\")"
     ]
   }
 }
