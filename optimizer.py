@@ -489,7 +489,7 @@ def run_single_experiment(windows, exp_num, skip_live=False):
         save_best(best_cfg, best_stats, exp_num)
         log_experiment(exp_num, best_cfg, best_stats, None, "BACKTEST_ONLY")
         git_commit(f"exp_{exp_num}: SL={sl_str} TP={tp_str} dir={best_cfg['direction_mode']}{flip_str} "
-                   f"→ PF={best_stats['profit_factor']:.4f} (BACKTEST)")
+                   f"-> PF={best_stats['profit_factor']:.4f} (BACKTEST)")
         return best
 
     # 2. Live validation
@@ -509,12 +509,12 @@ def run_single_experiment(windows, exp_num, skip_live=False):
         save_best(best_cfg, best_stats, exp_num)
         score = best_stats['profit_factor']
         git_commit(f"exp_{exp_num}: SL={sl_str} TP={tp_str} dir={best_cfg['direction_mode']}{flip_str} "
-                   f"→ PF={score:.4f} PnL=${live_result['pnl']:+.2f} (KEEP)")
+                   f"-> PF={score:.4f} PnL=${live_result['pnl']:+.2f} (KEEP)")
         print(f"\n  [OK] KEEP - Config kaydedildi ve commit edildi")
     else:
         score = best_stats['profit_factor']
         git_commit(f"exp_{exp_num}: SL={sl_str} TP={tp_str} dir={best_cfg['direction_mode']}{flip_str} "
-                   f"→ PF={score:.4f} PnL=${live_result['pnl']:+.2f} (DISCARD)")
+                   f"-> PF={score:.4f} PnL=${live_result['pnl']:+.2f} (DISCARD)")
         print(f"\n  [X] DISCARD - Config discard edildi")
 
     return best if decision == "KEEP" else None

@@ -1,5 +1,6 @@
 """Dashboard server - serves dashboard.html + JSON API endpoints."""
 import http.server
+import socketserver
 import json
 import os
 import glob
@@ -7,6 +8,12 @@ import urllib.request
 
 PORT = 8877
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    """Handle each request in a separate thread."""
+    daemon_threads = True
+    allow_reuse_address = True
 
 
 class DashboardHandler(http.server.BaseHTTPRequestHandler):
@@ -24,6 +31,8 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 self._serve_history()
             elif self.path == "/api/window_trades":
                 self._serve_json_file("window_trades.json")
+            elif self.path == "/api/optimizer":
+                self._serve_json_file("optimizer_dashboard.json")
             elif self.path.startswith("/api/btc_price"):
                 self._proxy_btc_price()
             else:
@@ -97,5 +106,5 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
 if __name__ == "__main__":
     os.chdir(BASE_DIR)
     print("Dashboard: http://localhost:" + str(PORT))
-    httpd = http.server.HTTPServer(("", PORT), DashboardHandler)
+    httpd = ThreadedHTTPServer(("", PORT), DashboardHandler)
     httpd.serve_forever()
