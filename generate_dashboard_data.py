@@ -77,7 +77,7 @@ def backtest(windows, sl, tp, direction_mode, flip):
     return trades
 
 
-def calc_stats(trades):
+def calc_stats(trades, bankroll=85.0):
     if not trades:
         return None
     wins = sum(1 for t in trades if t["pnl"] > 0)
@@ -87,13 +87,46 @@ def calc_stats(trades):
     pf = gp / gl if gl > 0 else 999.0
     total = sum(t["pnl"] for t in trades)
 
+    # Max drawdown in dollars
     running = 0
     peak = 0
     max_dd = 0
-    for t in trades:
+    dd_start = 0
+    dd_end = 0
+    cur_dd_start = 0
+    for i, t in enumerate(trades):
         running += t["pnl"]
-        peak = max(peak, running)
-        max_dd = max(max_dd, peak - running)
+        if running > peak:
+            peak = running
+            cur_dd_start = i
+        dd = peak - running
+        if dd > max_dd:
+            max_dd = dd
+            dd_start = cur_dd_start
+            dd_end = i
+
+    # Max drawdown as % of bankroll
+    dd_pct = round(max_dd / bankroll * 100, 2) if bankroll > 0 else 0
+
+    # Max consecutive losses
+    max_consec_loss = 0
+    cur_consec = 0
+    for t in trades:
+        if t["pnl"] < 0:
+            cur_consec += 1
+            max_consec_loss = max(max_consec_loss, cur_consec)
+        else:
+            cur_consec = 0
+
+    # Recovery: how many wins needed to recover from max DD
+    # avg win = gp / wins, recovery = max_dd / avg_win
+    avg_win = gp / wins if wins > 0 else 0
+    recovery_wins = round(max_dd / avg_win, 1) if avg_win > 0 else 999
+
+    # Ruin risk: probability of hitting 0 bankroll
+    # Simplified: can survive N consecutive losses where N = bankroll / loss_per_trade
+    avg_loss = gl / (n - wins) if (n - wins) > 0 else 0
+    max_losses_before_ruin = int(bankroll / avg_loss) if avg_loss > 0 else 999
 
     return {
         "trades": n,
@@ -104,6 +137,12 @@ def calc_stats(trades):
         "gp": round(gp, 2),
         "gl": round(gl, 2),
         "dd": round(max_dd, 2),
+        "dd_pct": dd_pct,
+        "max_consec_loss": max_consec_loss,
+        "recovery_wins": recovery_wins,
+        "max_losses_before_ruin": max_losses_before_ruin,
+        "avg_win": round(avg_win, 2),
+        "avg_loss": round(avg_loss, 2),
     }
 
 

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-03-15T22:45:10.711313",
+  "generated": "2026-03-15T23:19:35.337386",
   "total_windows": 672,
   "up_windows": 348,
   "down_windows": 324,
@@ -17,7 +17,13 @@
         "pf": 10.7407,
         "gp": 1740.0,
         "gl": 162.0,
-        "dd": 3.0
+        "dd": 3.0,
+        "dd_pct": 3.53,
+        "max_consec_loss": 6,
+        "recovery_wins": 0.6,
+        "max_losses_before_ruin": 170,
+        "avg_win": 5.0,
+        "avg_loss": 0.5
       }
     },
     {
@@ -33,7 +39,13 @@
         "pf": 10.6769,
         "gp": 1735.0,
         "gl": 162.5,
-        "dd": 3.5
+        "dd": 3.5,
+        "dd_pct": 4.12,
+        "max_consec_loss": 7,
+        "recovery_wins": 0.7,
+        "max_losses_before_ruin": 170,
+        "avg_win": 5.0,
+        "avg_loss": 0.5
       }
     },
     {
@@ -49,7 +61,13 @@
         "pf": 9.366,
         "gp": 1625.0,
         "gl": 173.5,
-        "dd": 3.0
+        "dd": 3.0,
+        "dd_pct": 3.53,
+        "max_consec_loss": 6,
+        "recovery_wins": 0.6,
+        "max_losses_before_ruin": 170,
+        "avg_win": 5.0,
+        "avg_loss": 0.5
       }
     },
     {
@@ -65,7 +83,13 @@
         "pf": 9.3103,
         "gp": 1620.0,
         "gl": 174.0,
-        "dd": 3.5
+        "dd": 3.5,
+        "dd_pct": 4.12,
+        "max_consec_loss": 7,
+        "recovery_wins": 0.7,
+        "max_losses_before_ruin": 170,
+        "avg_win": 5.0,
+        "avg_loss": 0.5
       }
     },
     {
@@ -81,7 +105,13 @@
         "pf": 6.4444,
         "gp": 1044.0,
         "gl": 162.0,
-        "dd": 3.0
+        "dd": 3.0,
+        "dd_pct": 3.53,
+        "max_consec_loss": 6,
+        "recovery_wins": 1.0,
+        "max_losses_before_ruin": 170,
+        "avg_win": 3.0,
+        "avg_loss": 0.5
       }
     },
     {
@@ -97,7 +127,13 @@
         "pf": 6.4062,
         "gp": 1041.0,
         "gl": 162.5,
-        "dd": 3.5
+        "dd": 3.5,
+        "dd_pct": 4.12,
+        "max_consec_loss": 7,
+        "recovery_wins": 1.2,
+        "max_losses_before_ruin": 170,
+        "avg_win": 3.0,
+        "avg_loss": 0.5
       }
     },
     {
@@ -113,7 +149,13 @@
         "pf": 5.6196,
         "gp": 975.0,
         "gl": 173.5,
-        "dd": 3.0
+        "dd": 3.0,
+        "dd_pct": 3.53,
+        "max_consec_loss": 6,
+        "recovery_wins": 1.0,
+        "max_losses_before_ruin": 170,
+        "avg_win": 3.0,
+        "avg_loss": 0.5
       }
     },
     {
@@ -129,7 +171,13 @@
         "pf": 5.5862,
         "gp": 972.0,
         "gl": 174.0,
-        "dd": 3.5
+        "dd": 3.5,
+        "dd_pct": 4.12,
+        "max_consec_loss": 7,
+        "recovery_wins": 1.2,
+        "max_losses_before_ruin": 170,
+        "avg_win": 3.0,
+        "avg_loss": 0.5
       }
     },
     {
@@ -145,7 +193,13 @@
         "pf": 5.3704,
         "gp": 1740.0,
         "gl": 324.0,
-        "dd": 6.0
+        "dd": 6.0,
+        "dd_pct": 7.06,
+        "max_consec_loss": 6,
+        "recovery_wins": 1.2,
+        "max_losses_before_ruin": 85,
+        "avg_win": 5.0,
+        "avg_loss": 1.0
       }
     },
     {
@@ -161,7 +215,13 @@
         "pf": 5.3704,
         "gp": 870.0,
         "gl": 162.0,
-        "dd": 3.0
+        "dd": 3.0,
+        "dd_pct": 3.53,
+        "max_consec_loss": 6,
+        "recovery_wins": 1.2,
+        "max_losses_before_ruin": 170,
+        "avg_win": 2.5,
+        "avg_loss": 0.5
       }
     }
   ],
@@ -635,7 +695,13 @@
         "pf": 5.0,
         "gp": 960.0,
         "gl": 192.0,
-        "dd": 7.5
+        "dd": 7.5,
+        "dd_pct": 8.82,
+        "max_consec_loss": 5,
+        "recovery_wins": 1.5,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "downtrend": {
         "trades": 193,
@@ -645,7 +711,13 @@
         "pf": 2.1652,
         "gp": 380.0,
         "gl": 175.5,
-        "dd": 9.0
+        "dd": 9.0,
+        "dd_pct": 10.59,
+        "max_consec_loss": 6,
+        "recovery_wins": 1.8,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "sideways": {
         "trades": 159,
@@ -655,7 +727,13 @@
         "pf": 3.3755,
         "gp": 400.0,
         "gl": 118.5,
-        "dd": 7.5
+        "dd": 7.5,
+        "dd_pct": 8.82,
+        "max_consec_loss": 5,
+        "recovery_wins": 1.5,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "all": {
         "trades": 672,
@@ -665,7 +743,13 @@
         "pf": 3.5802,
         "gp": 1740.0,
         "gl": 486.0,
-        "dd": 9.0
+        "dd": 9.0,
+        "dd_pct": 10.59,
+        "max_consec_loss": 6,
+        "recovery_wins": 1.8,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       }
     },
     "always_down": {
@@ -677,7 +761,13 @@
         "pf": 2.2222,
         "gp": 640.0,
         "gl": 288.0,
-        "dd": 10.5
+        "dd": 10.5,
+        "dd_pct": 12.35,
+        "max_consec_loss": 7,
+        "recovery_wins": 2.1,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "downtrend": {
         "trades": 193,
@@ -687,7 +777,13 @@
         "pf": 5.1316,
         "gp": 585.0,
         "gl": 114.0,
-        "dd": 6.0
+        "dd": 6.0,
+        "dd_pct": 7.06,
+        "max_consec_loss": 4,
+        "recovery_wins": 1.2,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "sideways": {
         "trades": 159,
@@ -697,7 +793,13 @@
         "pf": 3.2917,
         "gp": 395.0,
         "gl": 120.0,
-        "dd": 7.5
+        "dd": 7.5,
+        "dd_pct": 8.82,
+        "max_consec_loss": 5,
+        "recovery_wins": 1.5,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "all": {
         "trades": 672,
@@ -707,7 +809,13 @@
         "pf": 3.1034,
         "gp": 1620.0,
         "gl": 522.0,
-        "dd": 10.5
+        "dd": 10.5,
+        "dd_pct": 12.35,
+        "max_consec_loss": 7,
+        "recovery_wins": 2.1,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       }
     },
     "momentum": {
@@ -719,7 +827,13 @@
         "pf": 4.0741,
         "gp": 880.0,
         "gl": 216.0,
-        "dd": 7.5
+        "dd": 7.5,
+        "dd_pct": 8.82,
+        "max_consec_loss": 5,
+        "recovery_wins": 1.5,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "downtrend": {
         "trades": 193,
@@ -729,7 +843,13 @@
         "pf": 3.165,
         "gp": 470.0,
         "gl": 148.5,
-        "dd": 10.5
+        "dd": 10.5,
+        "dd_pct": 12.35,
+        "max_consec_loss": 7,
+        "recovery_wins": 2.1,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "sideways": {
         "trades": 159,
@@ -739,7 +859,13 @@
         "pf": 2.8295,
         "gp": 365.0,
         "gl": 129.0,
-        "dd": 10.5
+        "dd": 10.5,
+        "dd_pct": 12.35,
+        "max_consec_loss": 7,
+        "recovery_wins": 2.1,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "all": {
         "trades": 672,
@@ -749,7 +875,13 @@
         "pf": 3.559,
         "gp": 1735.0,
         "gl": 487.5,
-        "dd": 10.5
+        "dd": 10.5,
+        "dd_pct": 12.35,
+        "max_consec_loss": 7,
+        "recovery_wins": 2.1,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       }
     },
     "contrarian": {
@@ -761,7 +893,13 @@
         "pf": 2.7273,
         "gp": 720.0,
         "gl": 264.0,
-        "dd": 9.0
+        "dd": 9.0,
+        "dd_pct": 10.59,
+        "max_consec_loss": 6,
+        "recovery_wins": 1.8,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "downtrend": {
         "trades": 193,
@@ -771,7 +909,13 @@
         "pf": 3.5106,
         "gp": 495.0,
         "gl": 141.0,
-        "dd": 7.5
+        "dd": 7.5,
+        "dd_pct": 8.82,
+        "max_consec_loss": 5,
+        "recovery_wins": 1.5,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "sideways": {
         "trades": 159,
@@ -781,7 +925,13 @@
         "pf": 3.9269,
         "gp": 430.0,
         "gl": 109.5,
-        "dd": 6.0
+        "dd": 6.0,
+        "dd_pct": 7.06,
+        "max_consec_loss": 4,
+        "recovery_wins": 1.2,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       },
       "all": {
         "trades": 672,
@@ -791,7 +941,13 @@
         "pf": 3.122,
         "gp": 1625.0,
         "gl": 520.5,
-        "dd": 9.0
+        "dd": 9.0,
+        "dd_pct": 10.59,
+        "max_consec_loss": 6,
+        "recovery_wins": 1.8,
+        "max_losses_before_ruin": 56,
+        "avg_win": 5.0,
+        "avg_loss": 1.5
       }
     }
   },

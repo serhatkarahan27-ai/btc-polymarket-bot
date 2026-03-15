@@ -94,14 +94,22 @@ tr.best-row{background:#0d33211a;border-left:3px solid #3fb950}
 
   <!-- Top 10 Configs Table -->
   <div class="sec fw">
-    <h2>Top 10 Configs by Profit Factor (672 windows backtest)</h2>
+    <h2>Top 10 Configs by Profit Factor (672 windows backtest) — Bankroll: $85</h2>
     <table>
       <thead><tr>
         <th>#</th><th>SL</th><th>TP</th><th>Direction</th><th>Flip</th>
-        <th>PF</th><th>WR</th><th>PnL</th><th>Gross P</th><th>Gross L</th><th>Max DD</th><th>Trades</th><th></th>
+        <th>PF</th><th>WR</th><th>PnL</th><th>Max DD$</th><th>DD%</th>
+        <th>Consec.L</th><th>Recovery</th><th>Ruin@</th><th></th>
       </tr></thead>
       <tbody id="t10"></tbody>
     </table>
+  </div>
+
+  <!-- Drawdown Risk Analysis -->
+  <div class="sec fw">
+    <h2>Drawdown Risk Analysis ($5 trade, $85 bankroll)</h2>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px" id="dd-cards"></div>
+    <div class="insight-box" id="dd-insight"></div>
   </div>
 
   <!-- Market Conditions -->
@@ -259,13 +267,16 @@ function upd(D){
     }
     document.getElementById('k-ct').textContent=t10.length>0?'196':'--';
 
-    // Top 10 table
+    // Top 10 table with drawdown metrics
     var tb10=document.getElementById('t10');
     tb10.innerHTML=t10.map(function(r,i){
       var s=r.stats;
       var slS=r.sl!==null?'$'+r.sl.toFixed(2):'OFF';
       var tpS=r.tp!==null?'$'+r.tp.toFixed(2):'OFF';
       var pnlCl=s.pnl>=0?'grn':'red';
+      var ddCl=s.dd_pct<=10?'grn':s.dd_pct<=25?'ylw':'red';
+      var clCl=s.max_consec_loss<=5?'grn':s.max_consec_loss<=10?'ylw':'red';
+      var ruinCl=s.max_losses_before_ruin>=50?'grn':s.max_losses_before_ruin>=20?'ylw':'red';
       var cls=i===0?'best-row':'';
       return'<tr class="'+cls+'"><td>'+(i+1)+'</td>'
         +'<td>'+(r.sl!==null?'<span class="red">'+slS+'</span>':'<span class="ylw">OFF</span>')+'</td>'
@@ -275,12 +286,45 @@ function upd(D){
         +'<td style="font-weight:700;color:'+CL.o+'">'+s.pf.toFixed(2)+'</td>'
         +'<td>'+(s.wr*100).toFixed(1)+'%</td>'
         +'<td class="'+pnlCl+'" style="font-weight:700">$'+(s.pnl>=0?'+':'')+s.pnl.toFixed(2)+'</td>'
-        +'<td class="grn">$'+s.gp.toFixed(2)+'</td>'
-        +'<td class="red">$'+s.gl.toFixed(2)+'</td>'
-        +'<td>$'+s.dd.toFixed(2)+'</td>'
-        +'<td>'+s.trades+'</td>'
+        +'<td class="red">$'+s.dd.toFixed(2)+'</td>'
+        +'<td class="'+ddCl+'">'+s.dd_pct.toFixed(1)+'%</td>'
+        +'<td class="'+clCl+'">'+s.max_consec_loss+'</td>'
+        +'<td>'+(s.recovery_wins||0).toFixed(1)+' wins</td>'
+        +'<td class="'+ruinCl+'">'+(s.max_losses_before_ruin||0)+' losses</td>'
         +'<td>'+(i===0?'<span class="bg-best">BEST</span>':'')+'</td></tr>';
     }).join('');
+
+    // Drawdown Risk Analysis cards
+    if(t10.length>0){
+      var bs=t10[0].stats;
+      var ddCards=document.getElementById('dd-cards');
+      var cards=[
+        {lbl:'MAX DRAWDOWN',val:'$'+bs.dd.toFixed(2),sub:bs.dd_pct.toFixed(1)+'% of $85',cl:bs.dd_pct<=10?'grn':'red'},
+        {lbl:'CONSEC. LOSSES',val:bs.max_consec_loss+'',sub:'worst streak',cl:bs.max_consec_loss<=5?'grn':bs.max_consec_loss<=10?'ylw':'red'},
+        {lbl:'RECOVERY',val:bs.recovery_wins.toFixed(1),sub:'wins to recover',cl:bs.recovery_wins<=3?'grn':'ylw'},
+        {lbl:'RUIN THRESHOLD',val:bs.max_losses_before_ruin+'',sub:'consec losses to $0',cl:bs.max_losses_before_ruin>=50?'grn':bs.max_losses_before_ruin>=20?'ylw':'red'},
+        {lbl:'AVG WIN / LOSS',val:'$'+bs.avg_win.toFixed(2)+' / $'+bs.avg_loss.toFixed(2),sub:'per trade',cl:'org'}
+      ];
+      ddCards.innerHTML=cards.map(function(c){
+        return'<div class="cond-card"><div class="cond-lbl">'+c.lbl+'</div>'
+          +'<div class="cond-val '+c.cl+'">'+c.val+'</div>'
+          +'<div class="cond-sub">'+c.sub+'</div></div>';
+      }).join('');
+
+      // Insight text
+      var ins=document.getElementById('dd-insight');
+      var lossPerTrade=bs.avg_loss;
+      var winPerTrade=bs.avg_win;
+      var safeStreaks=bs.max_losses_before_ruin;
+      var worstStreak=bs.max_consec_loss;
+      var safety=safeStreaks/worstStreak;
+      var safetyLbl=safety>=10?'<span class="grn">VERY SAFE</span>':safety>=5?'<span class="ylw">MODERATE</span>':'<span class="red">RISKY</span>';
+      ins.innerHTML='<b>Best Config Risk Profile:</b> Lose $'+lossPerTrade.toFixed(2)+'/trade on loss, win $'+winPerTrade.toFixed(2)+'/trade on win. '
+        +'Worst historical streak: <b>'+worstStreak+' consecutive losses</b> ($'+(worstStreak*lossPerTrade).toFixed(2)+' lost). '
+        +'Bankroll can survive <b>'+safeStreaks+' consecutive losses</b> before ruin. '
+        +'Safety margin: '+safety.toFixed(1)+'x worst streak. '+safetyLbl+'. '
+        +'Recovery from max DD needs only <b>'+bs.recovery_wins.toFixed(1)+' wins</b>.';
+    }
 
     // Equity curve
     var eq=O.equity_curve;
