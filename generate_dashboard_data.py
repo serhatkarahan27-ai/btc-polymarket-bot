@@ -279,6 +279,85 @@ def main():
             row[strat_name + "_pf"] = stats["pf"]
         sl_sensitivity.append(row)
 
+    # ============================================================
+    # WALK-FORWARD OVERFITTING TEST
+    # ============================================================
+    mid = len(windows) // 2
+    train_windows = windows[:mid]
+    test_windows = windows[mid:]
+
+    train_start = datetime.fromtimestamp(train_windows[0]["block_ts"], tz=timezone.utc)
+    train_end = datetime.fromtimestamp(train_windows[-1]["block_ts"], tz=timezone.utc)
+    test_start = datetime.fromtimestamp(test_windows[0]["block_ts"], tz=timezone.utc)
+    test_end = datetime.fromtimestamp(test_windows[-1]["block_ts"], tz=timezone.utc)
+
+    print(f"\nWalk-Forward: Train {len(train_windows)} ({train_start.strftime('%m/%d')}-{train_end.strftime('%m/%d')})"
+          f" | Test {len(test_windows)} ({test_start.strftime('%m/%d')}-{test_end.strftime('%m/%d')})")
+
+    # Find best config on TRAINING data only
+    wf_results = []
+    for sl, tp, direction, flip in itertools.product(sl_values, tp_values, dir_values, flip_values):
+        if sl is not None and tp is not None and sl >= tp:
+            continue
+        if direction == "always_up" and flip:
+            continue
+        if direction == "always_down" and flip:
+            continue
+
+        train_trades = backtest(train_windows, sl, tp, direction, flip)
+        train_stats = calc_stats(train_trades)
+        if train_stats and train_stats["trades"] >= 5:
+            wf_results.append({
+                "sl": sl, "tp": tp, "dir": direction, "flip": flip,
+                "train_stats": train_stats,
+            })
+
+    wf_results.sort(key=lambda r: r["train_stats"]["pf"], reverse=True)
+
+    # Test top 5 train configs on out-of-sample test data
+    wf_configs = []
+    for r in wf_results[:5]:
+        test_trades = backtest(test_windows, r["sl"], r["tp"], r["dir"], r["flip"])
+        test_stats = calc_stats(test_trades)
+        # Also get equity curves for train and test
+        train_trades = backtest(train_windows, r["sl"], r["tp"], r["dir"], r["flip"])
+        train_eq = [t["cum"] for t in train_trades]
+        test_eq = [t["cum"] for t in test_trades]
+
+        # Calculate degradation
+        train_pf = r["train_stats"]["pf"]
+        test_pf = test_stats["pf"] if test_stats else 0
+        degradation = round((1 - test_pf / train_pf) * 100, 1) if train_pf > 0 else 100
+
+        sl_str = "$" + str(r["sl"]) if r["sl"] is not None else "OFF"
+        tp_str = "$" + str(r["tp"]) if r["tp"] is not None else "OFF"
+        label = f"SL={sl_str} TP={tp_str} {r['dir']}" + ("+flip" if r["flip"] else "")
+
+        wf_configs.append({
+            "sl": r["sl"],
+            "tp": r["tp"],
+            "dir": r["dir"],
+            "flip": r["flip"],
+            "label": label,
+            "train": r["train_stats"],
+            "test": test_stats,
+            "degradation_pct": degradation,
+            "overfit": degradation > 50,
+            "train_eq": train_eq,
+            "test_eq": test_eq,
+        })
+
+        status = "OVERFIT" if degradation > 50 else "OK"
+        print(f"  {label}: Train PF={train_pf:.2f} -> Test PF={test_pf:.2f} ({degradation:+.0f}% deg) [{status}]")
+
+    walk_forward = {
+        "train_period": f"{train_start.strftime('%b %d')}-{train_end.strftime('%b %d')}",
+        "test_period": f"{test_start.strftime('%b %d')}-{test_end.strftime('%b %d')}",
+        "train_count": len(train_windows),
+        "test_count": len(test_windows),
+        "configs": wf_configs,
+    }
+
     # Output
     output = {
         "generated": datetime.now().isoformat(),
@@ -289,6 +368,7 @@ def main():
         "equity_curve": equity_curve,
         "conditions": conditions,
         "sl_sensitivity": sl_sensitivity,
+        "walk_forward": walk_forward,
     }
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:

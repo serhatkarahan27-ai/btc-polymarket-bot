@@ -112,6 +112,27 @@ tr.best-row{background:#0d33211a;border-left:3px solid #3fb950}
     <div class="insight-box" id="dd-insight"></div>
   </div>
 
+  <!-- Walk-Forward Overfitting Test -->
+  <div class="sec fw">
+    <h2>Walk-Forward Overfitting Test</h2>
+    <div class="cd-s" style="margin-bottom:8px" id="wf-period">Train: -- | Test: --</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <table>
+          <thead><tr>
+            <th>#</th><th>Config</th><th>Train PF</th><th>Test PF</th><th>Train WR</th><th>Test WR</th>
+            <th>Train PnL</th><th>Test PnL</th><th>Degrad.</th><th>Verdict</th>
+          </tr></thead>
+          <tbody id="wf-table"></tbody>
+        </table>
+      </div>
+      <div>
+        <div class="cc-tall"><canvas id="wfc"></canvas></div>
+      </div>
+    </div>
+    <div class="insight-box" id="wf-insight" style="margin-top:10px"></div>
+  </div>
+
   <!-- Market Conditions -->
   <div class="sec">
     <h2>Strategy Performance by Market Condition</h2>
@@ -164,7 +185,7 @@ tr.best-row{background:#0d33211a;border-left:3px solid #3fb950}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-var eqChart,slChart,exC,rc=10;
+var eqChart,slChart,exC,wfChart,rc=10;
 var CL={g:'#3fb950',r:'#f85149',y:'#d29922',o:'#f7931a',gr:'#8b949e',bg:'#161b22',ln:'#21262d',c:'#58a6ff'};
 
 function tt(ts){if(!ts)return'--:--';var d;if(typeof ts==='string'){d=new Date(ts)}else{d=new Date(typeof ts==='number'&&ts>1e12?ts:ts*1000)}if(isNaN(d.getTime()))return'--:--';return d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}
@@ -194,6 +215,17 @@ function initCharts(){
   exC=new Chart(document.getElementById('exc'),{type:'doughnut',
     data:{labels:['Take Profit','Stop Loss','Expiry'],datasets:[{data:[0,0,0],backgroundColor:[CL.g,CL.r,CL.y],borderColor:CL.bg,borderWidth:3}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:CL.gr,font:{size:10},padding:10}}}}});
+
+  // Walk-forward chart
+  wfChart=new Chart(document.getElementById('wfc'),{type:'line',
+    data:{labels:[],datasets:[]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
+      plugins:{legend:{display:true,position:'top',labels:{color:CL.gr,font:{size:9},boxWidth:12,padding:6}},
+        annotation:{annotations:{splitLine:{type:'line',xMin:0,xMax:0,borderColor:'#ffffff44',borderWidth:2,borderDash:[5,5],
+          label:{display:true,content:'TRAIN | TEST',color:'#fff',font:{size:10}}}}}},
+      scales:{x:{grid:{color:CL.ln},ticks:{display:false}},
+        y:{grid:{color:CL.ln},ticks:{color:CL.gr,font:{size:9},callback:function(v){return'$'+v}}}}
+    }});
 }
 
 var condData=null;
@@ -324,6 +356,78 @@ function upd(D){
         +'Bankroll can survive <b>'+safeStreaks+' consecutive losses</b> before ruin. '
         +'Safety margin: '+safety.toFixed(1)+'x worst streak. '+safetyLbl+'. '
         +'Recovery from max DD needs only <b>'+bs.recovery_wins.toFixed(1)+' wins</b>.';
+    }
+
+    // Walk-Forward Overfitting Test
+    var wf=O.walk_forward;
+    if(wf){
+      document.getElementById('wf-period').textContent='Train: '+wf.train_period+' ('+wf.train_count+' windows) | Test: '+wf.test_period+' ('+wf.test_count+' windows)';
+
+      var wfTbl=document.getElementById('wf-table');
+      wfTbl.innerHTML=(wf.configs||[]).map(function(c,i){
+        var deg=c.degradation_pct;
+        var degCl=deg<0?'grn':deg<30?'ylw':'red';
+        var verdict=c.overfit?'<span class="bg bg-l">OVERFIT</span>':'<span class="bg bg-w">PASS</span>';
+        var trnPnlCl=c.train.pnl>=0?'grn':'red';
+        var tstPnlCl=c.test.pnl>=0?'grn':'red';
+        return'<tr><td>'+(i+1)+'</td>'
+          +'<td style="font-size:10px">'+c.label+'</td>'
+          +'<td style="font-weight:700;color:'+CL.o+'">'+c.train.pf.toFixed(2)+'</td>'
+          +'<td style="font-weight:700;color:'+CL.c+'">'+c.test.pf.toFixed(2)+'</td>'
+          +'<td>'+(c.train.wr*100).toFixed(0)+'%</td>'
+          +'<td>'+(c.test.wr*100).toFixed(0)+'%</td>'
+          +'<td class="'+trnPnlCl+'">$'+(c.train.pnl>=0?'+':'')+c.train.pnl.toFixed(0)+'</td>'
+          +'<td class="'+tstPnlCl+'">$'+(c.test.pnl>=0?'+':'')+c.test.pnl.toFixed(0)+'</td>'
+          +'<td class="'+degCl+'">'+(deg>=0?'+':'')+deg.toFixed(0)+'%</td>'
+          +'<td>'+verdict+'</td></tr>';
+      }).join('');
+
+      // Walk-forward equity chart: train+test curves for top configs
+      var wfColors=[CL.g,CL.c,CL.o,CL.r,CL.y];
+      var wfDS=[];
+      (wf.configs||[]).forEach(function(c,i){
+        var fullEq=c.train_eq.concat(c.test_eq);
+        wfDS.push({
+          label:c.label,
+          data:fullEq,
+          borderColor:wfColors[i%wfColors.length],
+          borderWidth:i===0?2.5:1.5,
+          pointRadius:0,
+          tension:.2,
+          borderDash:i>=3?[4,4]:[]
+        });
+      });
+      var wfLabels=[];
+      if(wf.configs&&wf.configs.length>0){
+        var totalLen=wf.configs[0].train_eq.length+wf.configs[0].test_eq.length;
+        for(var wi=0;wi<totalLen;wi++)wfLabels.push(wi);
+      }
+      wfChart.data.labels=wfLabels;
+      wfChart.data.datasets=wfDS;
+      // Add split line annotation at train/test boundary
+      if(wf.configs&&wf.configs.length>0){
+        var splitAt=wf.configs[0].train_eq.length;
+        if(wfChart.options.plugins.annotation){
+          wfChart.options.plugins.annotation.annotations.splitLine.xMin=splitAt;
+          wfChart.options.plugins.annotation.annotations.splitLine.xMax=splitAt;
+        }
+      }
+      wfChart.update('none');
+
+      // Insight
+      var wfIns=document.getElementById('wf-insight');
+      var passCount=(wf.configs||[]).filter(function(c){return !c.overfit}).length;
+      var totalC=(wf.configs||[]).length;
+      var avgDeg=0;
+      (wf.configs||[]).forEach(function(c){avgDeg+=c.degradation_pct});
+      avgDeg=totalC>0?avgDeg/totalC:0;
+      var overfitLbl=passCount===totalC?'<span class="grn">NO OVERFITTING DETECTED</span>':passCount>0?'<span class="ylw">PARTIAL OVERFITTING</span>':'<span class="red">SEVERE OVERFITTING</span>';
+      wfIns.innerHTML='<b>Walk-Forward Result:</b> '+passCount+'/'+totalC+' configs pass. '
+        +'Average degradation: '+(avgDeg>=0?'+':'')+avgDeg.toFixed(0)+'%. '
+        +overfitLbl+'. '
+        +'Train period: <b>'+wf.train_period+'</b> ('+wf.train_count+' windows). '
+        +'Test period: <b>'+wf.test_period+'</b> ('+wf.test_count+' windows). '
+        +(passCount===totalC?'Strategy performance is consistent across train/test split — edge is real, not curve-fitted.':'Some configs degrade significantly on unseen data.');
     }
 
     // Equity curve
