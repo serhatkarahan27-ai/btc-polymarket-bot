@@ -1,0 +1,23 @@
+{
+  "experiment": 1,
+  "timestamp": "2026-03-13T22:44:57.441627",
+  "config": {
+    "dry_mode": true,
+    "trade_size_usd": 5.0,
+    "spread_threshold": 0.02,
+    "min_edge": 0.008,
+    "max_trades_per_window": 2,
+    "price_check_interval": 10,
+    "require_both_sides": true,
+    "up_bias": false,
+    "down_bias": false
+  },
+  "score": 0.0,
+  "fill_rate": 0.0,
+  "avg_edge": 0.0,
+  "win_rate": 0.0,
+  "trades": 0,
+  "opportunities": 0,
+  "decision": "DISCARD",
+  "best_score_before": 0.0
+}

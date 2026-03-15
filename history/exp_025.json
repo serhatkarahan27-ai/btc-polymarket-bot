@@ -1,0 +1,39 @@
+{
+  "experiment": 25,
+  "timestamp": "2026-03-15T15:20:00.000000",
+  "system": "polymarket_only",
+  "config": {
+    "dry_mode": true,
+    "trade_size_usd": 5.0,
+    "window_minutes": 15,
+    "collect_days": 7,
+    "direction_mode": "always_up",
+    "momentum_lookback": 2,
+    "entry_price": 0.48,
+    "stop_loss": 0.45,
+    "take_profit": 0.55,
+    "use_stop_loss": true,
+    "use_take_profit": false,
+    "live_windows": 3,
+    "limit_price": 0.65,
+    "max_spread_pct": 15.0
+  },
+  "backtest": {
+    "direction_mode": "always_up",
+    "note": "Phase 2 auto-optimized on 672 Polymarket windows"
+  },
+  "live_trades": 3,
+  "live_pnl_usd": 4.1321,
+  "live_wins": 1,
+  "live_losses": 2,
+  "live_details": [
+    {"window": "7:30-7:45 ET", "entry": 0.58, "exit": 0.445, "reason": "stop_loss", "pnl": -1.1638, "win": false, "note": "SL killed it - BTC actually went UP, token reached $0.78"},
+    {"window": "7:45-8:00 ET", "entry": 0.455, "exit": 1.00, "reason": "expiry", "pnl": 5.989, "win": true, "note": "Clean win, held to expiry"},
+    {"window": "8:15-8:30 ET", "entry": 0.505, "exit": 0.435, "reason": "stop_loss", "pnl": -0.6931, "win": false, "note": "SL at minute 1"}
+  ],
+  "score": 4.1321,
+  "decision": "KEEP",
+  "best_pnl_before": 0,
+  "hypothesis": "always_up with SL=$0.45, TP=OFF",
+  "observation": "SL=$0.45 too tight - 2 trades stopped out that would have been winners. Window 1 token reached $0.78 but SL killed at $0.445. Without SL, likely 3/3 wins."
+}
