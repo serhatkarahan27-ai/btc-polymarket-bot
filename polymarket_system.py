@@ -48,7 +48,7 @@ CONFIG = {
     "use_stop_loss": False,
     "use_take_profit": False,
     # Live
-    "live_windows": 3,
+    "live_windows": 5,
     "fill_check_interval": 5,     # seconds between price checks
     "limit_price": 0.65,          # accept UP token up to $0.65
     "max_spread_pct": 15.0,
@@ -1045,6 +1045,17 @@ if __name__ == "__main__":
             best_cfg, best_trades, _ = auto_optimize_polymarket(windows)
             if best_cfg:
                 run_live_validation(best_cfg, windows, n)
+        elif cmd == "--live-direct":
+            # Use CONFIG as-is, skip optimizer (for testing learned hypotheses)
+            n = int(sys.argv[2]) if len(sys.argv) > 2 else 3
+            windows = load_history()
+            print("\n  LIVE-DIRECT: Using CONFIG as-is (no optimizer override)")
+            print("  direction=%s SL=%s TP=%s" % (
+                CONFIG["direction_mode"],
+                "OFF" if not CONFIG["use_stop_loss"] else "$%.2f" % CONFIG["stop_loss"],
+                "OFF" if not CONFIG["use_take_profit"] else "$%.2f" % CONFIG["take_profit"],
+            ))
+            run_live_validation(CONFIG, windows, n)
         elif cmd == "--loop":
             run_forever()
         else:

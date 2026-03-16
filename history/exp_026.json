@@ -1,0 +1,36 @@
+{
+  "experiment": 26,
+  "timestamp": "2026-03-16T00:00:00.000000",
+  "system": "multi_config_parallel",
+  "config": {
+    "test_type": "5-config simultaneous on same price feed",
+    "windows": 5,
+    "configs_tested": [
+      {"name": "C1", "direction_mode": "always_up", "stop_loss": 0.45, "use_stop_loss": true, "use_take_profit": false},
+      {"name": "C2", "direction_mode": "momentum", "stop_loss": 0.45, "use_stop_loss": true, "use_take_profit": false},
+      {"name": "C3", "direction_mode": "momentum_flip", "stop_loss": 0.45, "use_stop_loss": true, "use_take_profit": false},
+      {"name": "C4", "direction_mode": "always_down", "stop_loss": 0.45, "use_stop_loss": true, "use_take_profit": false},
+      {"name": "C5", "direction_mode": "momentum_flip", "stop_loss": 0.45, "use_stop_loss": true, "take_profit": 0.80, "use_take_profit": true}
+    ]
+  },
+  "window_outcomes": ["UP(draw)", "UP", "DOWN", "DOWN", "UP"],
+  "results": {
+    "C1_always_up": {"wins": 2, "losses": 2, "draws": 1, "pnl_usd": 6.3557, "window_pnls": [0.0, 5.53, -1.4414, -1.4286, 3.6957]},
+    "C2_momentum":  {"wins": 2, "losses": 2, "draws": 1, "pnl_usd": 8.5151, "window_pnls": [0.0, 5.53, 6.4943, -1.0092, -2.5]},
+    "C3_mom_flip":  {"wins": 2, "losses": 3, "draws": 0, "pnl_usd": 4.1557, "window_pnls": [4.01, -0.68, -1.4414, -1.4286, 3.6957]},
+    "C4_always_down":{"wins": 2, "losses": 3, "draws": 0, "pnl_usd": 6.3151, "window_pnls": [4.01, -0.68, 6.4943, -1.0092, -2.5]},
+    "C5_mflip_tp80": {"wins": 2, "losses": 3, "draws": 0, "pnl_usd": 0.6565, "window_pnls": [2.25, -0.68, -1.4414, -1.4286, 1.9565]}
+  },
+  "leaderboard": [
+    {"rank": 1, "config": "C2: momentum", "pnl": 8.5151},
+    {"rank": 2, "config": "C1: always_up", "pnl": 6.3557},
+    {"rank": 3, "config": "C4: always_down", "pnl": 6.3151},
+    {"rank": 4, "config": "C3: mom+flip", "pnl": 4.1557},
+    {"rank": 5, "config": "C5: mflip+TP=0.80", "pnl": 0.6565}
+  ],
+  "score": 8.5151,
+  "decision": "KEEP",
+  "best_pnl_before": 4.1321,
+  "hypothesis": "5-config parallel test: momentum vs always_up vs always_down vs contrarian vs contrarian+TP",
+  "observation": "Momentum direction is best strategy (+$8.52/5 windows). All 5 configs profitable. SL=$0.45 still kills correct predictions (W4: 5/5 stopped out). TP=$0.80 caps upside too much (C5 worst). Key insight: momentum + no SL could be even better — combining two best findings."
+}
