@@ -12,6 +12,12 @@ C4: always_up + SL=$0.35, TP=OFF
 C5: always_down + SL=$0.40, TP=OFF
 
 KEY QUESTION: Is SL=$0.35-$0.40 better than SL=$0.45 (too tight) or no SL?
+
+EARLY ENTRY FIX:
+- Start scanning for market 30s before block opens (was: wait 10s after)
+- Poll every 3s until market found
+- MAX_ENTRY_PRICE tightened to $0.55 (was $0.65)
+- Goal: enter near $0.50 instead of $0.60+
 """
 
 import time
@@ -26,8 +32,9 @@ HISTORY_FILE = "polymarket_history.json"
 RESULT_FILE = "multi_config_results_v3.json"
 
 TRADE_SIZE = 5.0
-MAX_ENTRY_PRICE = 0.65
+MAX_ENTRY_PRICE = 0.55   # tightened from 0.65 — reject bad risk/reward entries
 MAX_AGE_SECS = 120
+EARLY_ENTRY_SECS = 30    # start looking for market 30s before block opens
 
 CONFIGS = [
     {
@@ -204,28 +211,49 @@ def run_one_window(window_num, total_windows, history_windows, all_results):
     log("Sonraki window: %s TR (in %dm %ds)" % (
         next_time_tr.strftime("%H:%M:%S"), wait_secs // 60, wait_secs % 60))
 
-    target_wait = max(0, wait_secs - 3)
-    if target_wait > 0:
-        log("Waiting %ds..." % target_wait)
+    # EARLY ENTRY: Wait until T-30s, then start polling for market
+    early_wait = max(0, wait_secs - EARLY_ENTRY_SECS)
+    if early_wait > 0:
+        log("Waiting %ds (will start scanning at T-%ds)..." % (early_wait, EARLY_ENTRY_SECS))
         waited = 0
-        while waited < target_wait:
-            chunk = min(60, target_wait - waited)
+        while waited < early_wait:
+            chunk = min(60, early_wait - waited)
             time.sleep(chunk)
             waited += chunk
-            rem = target_wait - waited
+            rem = early_wait - waited
             if rem > 0:
                 log("  %dm %ds remaining" % (rem // 60, rem % 60))
 
-    log("WINDOW OPEN! Waiting 10s for market to appear...")
-    time.sleep(10)
+    # Start aggressive polling for market (T-30s to T+30s)
+    log("SCANNING for market (early entry mode)...")
+    market = None
+    scan_start = time.time()
+    max_scan_secs = EARLY_ENTRY_SECS + 30  # scan up to 30s after block opens
+    while (time.time() - scan_start) < max_scan_secs:
+        # Try next block's slug directly (might exist before block opens)
+        slug = "btc-updown-15m-%d" % next_block
+        m = fetch_market_by_slug(slug)
+        if m and not m["closed"] and m.get("token_ids") and len(m["token_ids"]) >= 2:
+            entry_ts = time.time()
+            offset_from_block = entry_ts - next_block
+            log("MARKET FOUND! Entry at T%+.1fs (%.1fs %s block open)" % (
+                offset_from_block,
+                abs(offset_from_block),
+                "before" if offset_from_block < 0 else "after"))
+            market = {
+                "slug": slug,
+                "question": m["question"],
+                "token_ids": m["token_ids"],
+                "prices": m["prices"],
+                "block_ts": next_block,
+                "block_end": next_block + 900,
+                "entry_offset": offset_from_block,
+            }
+            break
+        time.sleep(3)  # poll every 3s (was 10s fixed wait)
 
-    market = find_next_window()
     if not market:
-        log("No fresh market. Retrying in 30s...")
-        time.sleep(30)
-        market = find_next_window()
-    if not market:
-        log("ERROR: No market found! Skipping window.")
+        log("ERROR: No market found after %ds scanning! Skipping." % max_scan_secs)
         for cfg in CONFIGS:
             if cfg["name"] not in all_results:
                 all_results[cfg["name"]] = []
@@ -320,9 +348,12 @@ def run_one_window(window_num, total_windows, history_windows, all_results):
         return "UNKNOWN"
 
     # Monitor with SL checks
-    window_secs = 15 * 60
+    # Calculate remaining time until block closes (account for early entry)
+    block_end = market["block_end"]
+    remaining_secs = max(60, int(block_end - time.time()))
+    log("Monitoring for %ds (until block closes)" % remaining_secs)
     check_interval = 5  # check every 5s for SL
-    total_checks = window_secs // check_interval
+    total_checks = remaining_secs // check_interval
 
     print("\n  %5s |" % "Time", end="", flush=True)
     for p in active_positions:
