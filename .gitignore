@@ -1,3 +1,11 @@
 __pycache__/
 *.pyc
 .claude/
+
+# Deployment sensitive files - NEVER push
+DEPLOY_COMMANDS.md
+*.tar.gz
+*.zip
+.env
+*.pem
+*.key
