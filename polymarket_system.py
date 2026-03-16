@@ -35,14 +35,14 @@ CONFIG = {
     "trade_size_usd": 5.0,
     "window_minutes": 15,
     "collect_days": 7,
-    # Direction
-    "direction_mode": "always_up",
+    # Direction — exp_026 showed momentum is best direction strategy (+$8.52/5w)
+    "direction_mode": "momentum",
     "momentum_lookback": 4,       # how many previous windows to look back
     # Entry
     "entry_price": 0.50,
-    # SL/TP — exp_025 showed SL=$0.45 killed 2 winning trades
-    # Hypothesis: disable SL, hold to expiry. Asymmetric payoff means
-    # 1 win ($5+) covers 2 losses ($5 each). SL just adds false exits.
+    # SL/TP — exp_025/026 confirmed: SL kills correct predictions.
+    # No SL + momentum = combining two best findings.
+    # Asymmetric payoff: 1 win ($5+) covers 2 losses ($5 max each).
     "stop_loss": 0.15,
     "take_profit": 0.70,
     "use_stop_loss": False,
@@ -94,13 +94,24 @@ def fetch_market_by_slug(slug):
         return None
 
 
+# Simple 3-second cache for CLOB midpoint prices
+_midpoint_cache = {}  # {token_id: (timestamp, price)}
+CACHE_TTL = 3  # seconds
+
+
 def get_clob_midpoint(token_id):
-    """Get current CLOB midpoint price for a token."""
+    """Get current CLOB midpoint price for a token (cached 3s)."""
+    now = time.time()
+    cached = _midpoint_cache.get(token_id)
+    if cached and (now - cached[0]) < CACHE_TTL:
+        return cached[1]
     try:
         r = requests.get("%s/midpoint" % CLOB_BASE,
                          params={"token_id": token_id}, timeout=5)
         if r.status_code == 200:
-            return float(r.json().get("mid", 0))
+            price = float(r.json().get("mid", 0))
+            _midpoint_cache[token_id] = (now, price)
+            return price
     except:
         pass
     return None

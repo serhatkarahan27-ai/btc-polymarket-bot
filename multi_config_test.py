@@ -108,12 +108,23 @@ def fetch_market_by_slug(slug):
         return None
 
 
+# Simple 3-second cache for CLOB midpoint prices
+_midpoint_cache = {}  # {token_id: (timestamp, price)}
+CACHE_TTL = 3  # seconds
+
+
 def get_clob_midpoint(token_id):
+    now = time.time()
+    cached = _midpoint_cache.get(token_id)
+    if cached and (now - cached[0]) < CACHE_TTL:
+        return cached[1]
     try:
         r = requests.get("%s/midpoint" % CLOB_BASE,
                          params={"token_id": token_id}, timeout=5)
         if r.status_code == 200:
-            return float(r.json().get("mid", 0))
+            price = float(r.json().get("mid", 0))
+            _midpoint_cache[token_id] = (now, price)
+            return price
     except:
         pass
     return None
