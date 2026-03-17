@@ -182,13 +182,7 @@ def calc_arb(up_price, down_price):
 # RESULTS STORAGE
 # ============================================================
 def load_results():
-    if os.path.exists(RESULTS_FILE):
-        try:
-            with open(RESULTS_FILE, "r") as f:
-                return json.load(f)
-        except Exception:
-            pass
-    return {
+    defaults = {
         "total_windows": 0,
         "total_scans": 0,
         "total_arb_found": 0,
@@ -197,6 +191,18 @@ def load_results():
         "opportunities": [],
         "trades": [],
     }
+    if os.path.exists(RESULTS_FILE):
+        try:
+            with open(RESULTS_FILE, "r") as f:
+                data = json.load(f)
+            # Ensure all keys exist (fixes KeyError for old files)
+            for k, v in defaults.items():
+                if k not in data:
+                    data[k] = v
+            return data
+        except Exception:
+            pass
+    return defaults
 
 
 def save_results(data):
@@ -525,8 +531,10 @@ def main():
 
     results = load_results()
     log("Loaded: %d windows, %d opportunities, %d trades, PnL: $%+.2f" %
-        (results.get("total_windows", 0), len(results["opportunities"]),
+        (results["total_windows"], len(results["opportunities"]),
          len(results["trades"]), results["total_pnl"]))
+
+    last_scanned_block = 0  # Track last scanned block to prevent re-scanning
 
     while True:
         try:
@@ -535,11 +543,15 @@ def main():
             current_block = (now // 900) * 900
             window_end_current = current_block + WINDOW_DURATION
 
-            # If current window still has >10s left, scan it
-            if now < window_end_current - 10:
+            # If current window still has >10s left AND we haven't scanned it yet
+            if now < window_end_current - 10 and current_block != last_scanned_block:
                 block_ts = current_block
             else:
                 block_ts = current_block + 900
+
+            # Skip if we already scanned this block (prevents infinite loop)
+            if block_ts == last_scanned_block:
+                block_ts = last_scanned_block + 900
 
             secs_to_scan_start = block_ts - PRE_WINDOW_SECS - now
 
@@ -551,6 +563,7 @@ def main():
                 time.sleep(secs_to_scan_start)
 
             scan_window(block_ts, results)
+            last_scanned_block = block_ts  # Mark as scanned
 
             # Running stats
             tw = results.get("total_windows", 0)
