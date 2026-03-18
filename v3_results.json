@@ -7,15 +7,17 @@
       "tp": null,
       "dir": "momentum",
       "flip": false,
-      "total_trades": 3,
+      "total_trades": 5,
       "wins": 2,
-      "total_pnl": 6.8286,
+      "total_pnl": 4.9238,
       "pnl_history": [
         3.13,
         4.7087,
+        -1.0101,
+        -0.8947,
         -1.0101
       ],
-      "wr": 66.7
+      "wr": 40.0
     },
     {
       "name": "Config2",
@@ -24,15 +26,17 @@
       "tp": null,
       "dir": "momentum",
       "flip": false,
-      "total_trades": 3,
+      "total_trades": 5,
       "wins": 2,
-      "total_pnl": 6.0205,
+      "total_pnl": 2.979,
       "pnl_history": [
         3.13,
         4.7087,
-        -1.8182
+        -1.8182,
+        -1.5263,
+        -1.5152
       ],
-      "wr": 66.7
+      "wr": 40.0
     },
     {
       "name": "Config3",
@@ -41,15 +45,17 @@
       "tp": null,
       "dir": "always_up",
       "flip": false,
-      "total_trades": 3,
+      "total_trades": 5,
       "wins": 2,
-      "total_pnl": 7.5297,
+      "total_pnl": 5.6249,
       "pnl_history": [
         -2.08,
         4.7087,
-        4.901
+        4.901,
+        -0.8947,
+        -1.0101
       ],
-      "wr": 66.7
+      "wr": 40.0
     },
     {
       "name": "Config4",
@@ -58,15 +64,17 @@
       "tp": null,
       "dir": "always_up",
       "flip": false,
-      "total_trades": 3,
+      "total_trades": 5,
       "wins": 2,
-      "total_pnl": 8.6397,
+      "total_pnl": 5.5982,
       "pnl_history": [
         -0.97,
         4.7087,
-        4.901
+        4.901,
+        -1.5263,
+        -1.5152
       ],
-      "wr": 66.7
+      "wr": 40.0
     },
     {
       "name": "Config5",
@@ -75,15 +83,17 @@
       "tp": null,
       "dir": "always_down",
       "flip": false,
-      "total_trades": 3,
-      "wins": 1,
-      "total_pnl": 0.7797,
+      "total_trades": 5,
+      "wins": 2,
+      "total_pnl": 0.3035,
       "pnl_history": [
         3.13,
         -1.3402,
-        -1.0101
+        -1.0101,
+        4.5238,
+        -5.0
       ],
-      "wr": 33.3
+      "wr": 40.0
     }
   ],
   "windows": [
@@ -611,8 +621,8 @@
       "block_ts": 1773699300,
       "timestamp": "2026-03-17T01:16:27.120764",
       "btc_entry": 74894.66,
-      "btc_exit": 0,
-      "actual_direction": "PENDING",
+      "btc_exit": 74482.36,
+      "actual_direction": "DOWN",
       "momentum": "UP",
       "momentum_pct": 0.1685,
       "market": "Bitcoin Up or Down - March 16, 6:15PM-6:30PM ET",
@@ -620,8 +630,8 @@
       "price_source": "CLOB_midpoint",
       "entry_time": "2026-03-17T01:16:27.119199",
       "pre_window_entry": false,
-      "secs_before_open": 0,
-      "status": "monitoring",
+      "secs_before_open": -87,
+      "status": "completed",
       "trades": {
         "Config1": {
           "direction": "UP",
@@ -642,9 +652,51 @@
               "token_price": 0.475,
               "up_price": 0.475,
               "down_price": 0.515
+            },
+            {
+              "tick": 121,
+              "time": "2026-03-17T01:22:06.956592",
+              "token_price": 0.135,
+              "up_price": 0.135,
+              "down_price": 0.845
+            },
+            {
+              "tick": 241,
+              "time": "2026-03-17T01:27:52.506570",
+              "token_price": 0.0045,
+              "up_price": 0.0045,
+              "down_price": 0.9955
+            },
+            {
+              "tick": 361,
+              "time": "2026-03-17T01:33:26.248700",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 481,
+              "time": "2026-03-17T01:39:07.851507",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 601,
+              "time": "2026-03-17T01:44:58.911071",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 721,
+              "time": "2026-03-17T01:50:34.283580",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
             }
           ],
-          "would_have_won": null
+          "would_have_won": -5.0
         },
         "Config2": {
           "direction": "UP",
@@ -665,9 +717,51 @@
               "token_price": 0.475,
               "up_price": 0.475,
               "down_price": 0.515
+            },
+            {
+              "tick": 121,
+              "time": "2026-03-17T01:22:06.956666",
+              "token_price": 0.135,
+              "up_price": 0.135,
+              "down_price": 0.845
+            },
+            {
+              "tick": 241,
+              "time": "2026-03-17T01:27:52.506672",
+              "token_price": 0.0045,
+              "up_price": 0.0045,
+              "down_price": 0.9955
+            },
+            {
+              "tick": 361,
+              "time": "2026-03-17T01:33:26.248802",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 481,
+              "time": "2026-03-17T01:39:07.851572",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 601,
+              "time": "2026-03-17T01:44:58.911091",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 721,
+              "time": "2026-03-17T01:50:34.283623",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
             }
           ],
-          "would_have_won": null
+          "would_have_won": -5.0
         },
         "Config3": {
           "direction": "UP",
@@ -688,9 +782,51 @@
               "token_price": 0.475,
               "up_price": 0.475,
               "down_price": 0.515
+            },
+            {
+              "tick": 121,
+              "time": "2026-03-17T01:22:06.956671",
+              "token_price": 0.135,
+              "up_price": 0.135,
+              "down_price": 0.845
+            },
+            {
+              "tick": 241,
+              "time": "2026-03-17T01:27:52.506678",
+              "token_price": 0.0045,
+              "up_price": 0.0045,
+              "down_price": 0.9955
+            },
+            {
+              "tick": 361,
+              "time": "2026-03-17T01:33:26.248817",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 481,
+              "time": "2026-03-17T01:39:07.851581",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 601,
+              "time": "2026-03-17T01:44:58.911094",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 721,
+              "time": "2026-03-17T01:50:34.283631",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
             }
           ],
-          "would_have_won": null
+          "would_have_won": -5.0
         },
         "Config4": {
           "direction": "UP",
@@ -711,9 +847,51 @@
               "token_price": 0.475,
               "up_price": 0.475,
               "down_price": 0.515
+            },
+            {
+              "tick": 121,
+              "time": "2026-03-17T01:22:06.956676",
+              "token_price": 0.135,
+              "up_price": 0.135,
+              "down_price": 0.845
+            },
+            {
+              "tick": 241,
+              "time": "2026-03-17T01:27:52.506682",
+              "token_price": 0.0045,
+              "up_price": 0.0045,
+              "down_price": 0.9955
+            },
+            {
+              "tick": 361,
+              "time": "2026-03-17T01:33:26.248827",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 481,
+              "time": "2026-03-17T01:39:07.851588",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 601,
+              "time": "2026-03-17T01:44:58.911097",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 721,
+              "time": "2026-03-17T01:50:34.283638",
+              "token_price": 0.455,
+              "up_price": 0.455,
+              "down_price": 0.545
             }
           ],
-          "would_have_won": null
+          "would_have_won": -5.0
         },
         "Config5": {
           "direction": "DOWN",
@@ -722,11 +900,11 @@
           "tokens": 9.5238,
           "sl": 0.4,
           "tp": null,
-          "exit_price": null,
-          "exit_reason": null,
-          "exit_time": null,
-          "pnl": null,
-          "exited": false,
+          "exit_price": 1.0,
+          "exit_reason": "expiry_win",
+          "exit_time": "2026-03-17T23:20:28.470509",
+          "pnl": 4.5238,
+          "exited": true,
           "price_log": [
             {
               "tick": 1,
@@ -734,15 +912,439 @@
               "token_price": 0.515,
               "up_price": 0.475,
               "down_price": 0.515
+            },
+            {
+              "tick": 121,
+              "time": "2026-03-17T01:22:06.956681",
+              "token_price": 0.845,
+              "up_price": 0.135,
+              "down_price": 0.845
+            },
+            {
+              "tick": 241,
+              "time": "2026-03-17T01:27:52.506687",
+              "token_price": 0.9955,
+              "up_price": 0.0045,
+              "down_price": 0.9955
+            },
+            {
+              "tick": 361,
+              "time": "2026-03-17T01:33:26.248838",
+              "token_price": 0.545,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 481,
+              "time": "2026-03-17T01:39:07.851597",
+              "token_price": 0.545,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 601,
+              "time": "2026-03-17T01:44:58.911099",
+              "token_price": 0.545,
+              "up_price": 0.455,
+              "down_price": 0.545
+            },
+            {
+              "tick": 721,
+              "time": "2026-03-17T01:50:34.283645",
+              "token_price": 0.545,
+              "up_price": 0.455,
+              "down_price": 0.545
             }
           ],
           "would_have_won": null
         }
-      }
+      },
+      "completed_at": "2026-03-17T23:20:28.471217"
+    },
+    {
+      "window": 5,
+      "block_ts": 1773779400,
+      "timestamp": "2026-03-17T23:30:03.310045",
+      "btc_entry": 74652.27,
+      "btc_exit": 74746.75,
+      "actual_direction": "UP",
+      "momentum": "UP",
+      "momentum_pct": 0.26,
+      "market": "Bitcoin Up or Down - March 17, 4:30PM-4:45PM ET",
+      "slug": "btc-updown-15m-1773779400",
+      "price_source": "CLOB_midpoint",
+      "entry_time": "2026-03-17T23:29:58.050504",
+      "pre_window_entry": true,
+      "secs_before_open": 2,
+      "status": "completed",
+      "trades": {
+        "Config1": {
+          "direction": "UP",
+          "entry_price": 0.495,
+          "entry_time": "2026-03-17T23:29:58.050504",
+          "tokens": 10.101,
+          "sl": 0.4,
+          "tp": null,
+          "exit_price": 0.395,
+          "exit_reason": "stop_loss",
+          "exit_time": "2026-03-17T23:30:30.172778",
+          "pnl": -1.0101,
+          "exited": true,
+          "price_log": [
+            {
+              "tick": 1,
+              "time": "2026-03-17T23:30:08.219499",
+              "token_price": 0.495,
+              "up_price": 0.495,
+              "down_price": 0.51
+            },
+            {
+              "tick": 121,
+              "time": "2026-03-17T23:39:14.755075",
+              "token_price": 0.055,
+              "up_price": 0.055,
+              "down_price": 0.945
+            },
+            {
+              "tick": 241,
+              "time": "2026-03-17T23:48:02.286293",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 361,
+              "time": "2026-03-17T23:57:13.147038",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 481,
+              "time": "2026-03-18T00:06:08.662966",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 601,
+              "time": "2026-03-18T00:14:37.778699",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 721,
+              "time": "2026-03-18T00:23:37.927003",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 841,
+              "time": "2026-03-18T00:32:56.061089",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            }
+          ],
+          "would_have_won": 5.101
+        },
+        "Config2": {
+          "direction": "UP",
+          "entry_price": 0.495,
+          "entry_time": "2026-03-17T23:29:58.050504",
+          "tokens": 10.101,
+          "sl": 0.35,
+          "tp": null,
+          "exit_price": 0.345,
+          "exit_reason": "stop_loss",
+          "exit_time": "2026-03-17T23:31:48.937429",
+          "pnl": -1.5152,
+          "exited": true,
+          "price_log": [
+            {
+              "tick": 1,
+              "time": "2026-03-17T23:30:08.219545",
+              "token_price": 0.495,
+              "up_price": 0.495,
+              "down_price": 0.51
+            },
+            {
+              "tick": 121,
+              "time": "2026-03-17T23:39:14.757417",
+              "token_price": 0.055,
+              "up_price": 0.055,
+              "down_price": 0.945
+            },
+            {
+              "tick": 241,
+              "time": "2026-03-17T23:48:02.286464",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 361,
+              "time": "2026-03-17T23:57:13.147204",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 481,
+              "time": "2026-03-18T00:06:08.663156",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 601,
+              "time": "2026-03-18T00:14:37.778871",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 721,
+              "time": "2026-03-18T00:23:37.927182",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 841,
+              "time": "2026-03-18T00:32:56.079643",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            }
+          ],
+          "would_have_won": 5.101
+        },
+        "Config3": {
+          "direction": "UP",
+          "entry_price": 0.495,
+          "entry_time": "2026-03-17T23:29:58.050504",
+          "tokens": 10.101,
+          "sl": 0.4,
+          "tp": null,
+          "exit_price": 0.395,
+          "exit_reason": "stop_loss",
+          "exit_time": "2026-03-17T23:30:30.173118",
+          "pnl": -1.0101,
+          "exited": true,
+          "price_log": [
+            {
+              "tick": 1,
+              "time": "2026-03-17T23:30:08.219556",
+              "token_price": 0.495,
+              "up_price": 0.495,
+              "down_price": 0.51
+            },
+            {
+              "tick": 121,
+              "time": "2026-03-17T23:39:14.757444",
+              "token_price": 0.055,
+              "up_price": 0.055,
+              "down_price": 0.945
+            },
+            {
+              "tick": 241,
+              "time": "2026-03-17T23:48:02.286511",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 361,
+              "time": "2026-03-17T23:57:13.147220",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 481,
+              "time": "2026-03-18T00:06:08.663174",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 601,
+              "time": "2026-03-18T00:14:37.778887",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 721,
+              "time": "2026-03-18T00:23:37.927202",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 841,
+              "time": "2026-03-18T00:32:56.079667",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            }
+          ],
+          "would_have_won": 5.101
+        },
+        "Config4": {
+          "direction": "UP",
+          "entry_price": 0.495,
+          "entry_time": "2026-03-17T23:29:58.050504",
+          "tokens": 10.101,
+          "sl": 0.35,
+          "tp": null,
+          "exit_price": 0.345,
+          "exit_reason": "stop_loss",
+          "exit_time": "2026-03-17T23:31:48.937624",
+          "pnl": -1.5152,
+          "exited": true,
+          "price_log": [
+            {
+              "tick": 1,
+              "time": "2026-03-17T23:30:08.219565",
+              "token_price": 0.495,
+              "up_price": 0.495,
+              "down_price": 0.51
+            },
+            {
+              "tick": 121,
+              "time": "2026-03-17T23:39:14.757458",
+              "token_price": 0.055,
+              "up_price": 0.055,
+              "down_price": 0.945
+            },
+            {
+              "tick": 241,
+              "time": "2026-03-17T23:48:02.286522",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 361,
+              "time": "2026-03-17T23:57:13.147227",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 481,
+              "time": "2026-03-18T00:06:08.663183",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 601,
+              "time": "2026-03-18T00:14:37.778896",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 721,
+              "time": "2026-03-18T00:23:37.927217",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 841,
+              "time": "2026-03-18T00:32:56.079677",
+              "token_price": 0.505,
+              "up_price": 0.505,
+              "down_price": 0.495
+            }
+          ],
+          "would_have_won": 5.101
+        },
+        "Config5": {
+          "direction": "DOWN",
+          "entry_price": 0.505,
+          "entry_time": "2026-03-17T23:29:58.050504",
+          "tokens": 9.901,
+          "sl": 0.4,
+          "tp": null,
+          "exit_price": 0.0,
+          "exit_reason": "expiry_loss",
+          "exit_time": "2026-03-18T00:37:01.110040",
+          "pnl": -5.0,
+          "exited": true,
+          "price_log": [
+            {
+              "tick": 1,
+              "time": "2026-03-17T23:30:08.219574",
+              "token_price": 0.51,
+              "up_price": 0.495,
+              "down_price": 0.51
+            },
+            {
+              "tick": 121,
+              "time": "2026-03-17T23:39:14.757472",
+              "token_price": 0.945,
+              "up_price": 0.055,
+              "down_price": 0.945
+            },
+            {
+              "tick": 241,
+              "time": "2026-03-17T23:48:02.286529",
+              "token_price": 0.495,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 361,
+              "time": "2026-03-17T23:57:13.147234",
+              "token_price": 0.495,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 481,
+              "time": "2026-03-18T00:06:08.663192",
+              "token_price": 0.495,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 601,
+              "time": "2026-03-18T00:14:37.778905",
+              "token_price": 0.495,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 721,
+              "time": "2026-03-18T00:23:37.927227",
+              "token_price": 0.495,
+              "up_price": 0.505,
+              "down_price": 0.495
+            },
+            {
+              "tick": 841,
+              "time": "2026-03-18T00:32:56.079686",
+              "token_price": 0.495,
+              "up_price": 0.505,
+              "down_price": 0.495
+            }
+          ],
+          "would_have_won": null
+        }
+      },
+      "completed_at": "2026-03-18T00:37:01.111368"
     }
   ],
-  "status": "running",
+  "status": "completed",
   "started": "2026-03-16T00:00:00",
   "target_windows": 5,
-  "last_update": "2026-03-17T01:17:21.707743"
+  "last_update": "2026-03-18T00:37:01.112664",
+  "completed": "2026-03-18T00:37:06.131785"
 }

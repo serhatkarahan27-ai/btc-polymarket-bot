@@ -75,6 +75,35 @@ Her deney sonrası `history/exp_{N}.json` dosyası oluştur:
 }
 ```
 
+## CRITICAL ENTRY RULE (NEVER FORGET)
+- ALWAYS enter at T-2 seconds BEFORE window opens
+- NEVER enter after window opens (market makers move price!)
+- Target entry price: $0.48-$0.52
+- If pre-window price > $0.55 → skip window
+- This rule applies to ALL experiments forever
+
+### Pre-Window Entry Sequence:
+1. T-30s: Check BTC momentum, decide direction
+2. T-10s: Fetch token IDs for next window via Gamma API
+3. T-2s: Fire order immediately (catch ~$0.50 price!)
+4. T+0s: Window opens, position already active
+5. Monitor SL/TP throughout 15-min window
+6. Log: "Pre-window entry @ $0.502 (T-2s before open)"
+
+### Detailed Trade Logging:
+- Show entry time, entry price, SL level for each config
+- Show price every 2 minutes during window
+- Show exit time, exit price, exit reason (SL/expiry)
+- Show "would have won $X if no SL" analysis after each window
+
+### CRITICAL SAVE RULE (NEVER FORGET):
+- Always save results IMMEDIATELY after every trade event
+- Save v3_results.json after EVERY SL/TP trigger (instant save)
+- Save v3_results.json every 30 seconds as backup during monitoring
+- Save window as "monitoring" status at entry, update to "completed" at expiry
+- Use flush=True on every file write to prevent data loss
+- If script crashes, all completed trades must already be saved
+
 ## Başlangıç
 İlk mesajı alınca:
 1. Mevcut best_score'u `history/` klasöründen oku (yoksa 0 kabul et)

@@ -439,7 +439,7 @@ def run_window_for_all_configs(block_ts, results_data):
     log("Sonuclar kaydedildi -> %s" % RESULTS_FILE)
 
 
-def run_validation(num_windows=5):
+def run_validation(num_windows=5, resume=False):
     """Run validation for N windows."""
     print("\n" + "#" * 70)
     print("  LIVE MULTI-CONFIG VALIDATOR")
@@ -452,18 +452,30 @@ def run_validation(num_windows=5):
         print("  - %s" % cfg["label"])
     print()
 
-    # Initialize or load results
-    results_data = {
-        "configs": [],
-        "windows": [],
-        "status": "starting",
-        "started": datetime.now().isoformat(),
-        "target_windows": num_windows,
-        "last_update": datetime.now().isoformat(),
-    }
-    save_results(results_data)
+    # Initialize or RESUME existing results
+    existing = load_results()
+    if existing.get("configs") and len(existing.get("windows", [])) > 0 and resume:
+        results_data = existing
+        results_data["target_windows"] = num_windows
+        done = len(results_data["windows"])
+        print("  RESUMING from window %d (existing %d windows)" % (done + 1, done))
+        print("  Current standings:")
+        for cs in sorted(results_data["configs"], key=lambda c: c["total_pnl"], reverse=True):
+            print("    %s: $%+.2f (%dW/%dL)" % (cs["label"], cs["total_pnl"], cs["wins"], cs["total_trades"] - cs["wins"]))
+        print()
+    else:
+        results_data = {
+            "configs": [],
+            "windows": [],
+            "status": "starting",
+            "started": datetime.now().isoformat(),
+            "target_windows": num_windows,
+            "last_update": datetime.now().isoformat(),
+        }
+        done = 0
+        save_results(results_data)
 
-    for i in range(num_windows):
+    for i in range(done, num_windows):
         print("\n>>> Window %d/%d bekliyor..." % (i + 1, num_windows))
         block_ts = wait_for_window()
         run_window_for_all_configs(block_ts, results_data)
@@ -506,4 +518,5 @@ def run_validation(num_windows=5):
 if __name__ == "__main__":
     import sys
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 5
-    run_validation(n)
+    do_resume = "--resume" in sys.argv
+    run_validation(n, resume=do_resume)

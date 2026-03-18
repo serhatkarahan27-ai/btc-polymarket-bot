@@ -34,7 +34,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
             elif self.path == "/api/optimizer":
                 self._serve_json_file("optimizer_dashboard.json")
             elif self.path == "/api/validation":
-                self._serve_json_file("validation_results.json")
+                self._serve_json_file("v3_results.json")
             elif self.path.startswith("/api/btc_price"):
                 self._proxy_btc_price()
             else:
