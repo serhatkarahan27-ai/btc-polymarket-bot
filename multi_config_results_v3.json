@@ -1,0 +1,112 @@
+{
+  "C1: momentum SL=0.40": [
+    {
+      "pnl": 3.1301,
+      "exit_reason": "expiry"
+    },
+    {
+      "pnl": 4.7087,
+      "exit_reason": "expiry"
+    },
+    {
+      "pnl": -1.165,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": -0.6395,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": -0.9896,
+      "exit_reason": "SL"
+    }
+  ],
+  "C2: momentum SL=0.35": [
+    {
+      "pnl": 3.1301,
+      "exit_reason": "expiry"
+    },
+    {
+      "pnl": 4.7087,
+      "exit_reason": "expiry"
+    },
+    {
+      "pnl": -1.6505,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": -0.9884,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": 5.4167,
+      "exit_reason": "expiry"
+    }
+  ],
+  "C3: always_up SL=0.40": [
+    {
+      "pnl": -2.0779,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": -0.9278,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": 5.5263,
+      "exit_reason": "expiry"
+    },
+    {
+      "pnl": -1.4732,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": -1.5238,
+      "exit_reason": "SL"
+    }
+  ],
+  "C4: always_up SL=0.35": [
+    {
+      "pnl": -0.974,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": -1.4433,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": 5.5263,
+      "exit_reason": "expiry"
+    },
+    {
+      "pnl": 3.9286,
+      "exit_reason": "expiry"
+    },
+    {
+      "pnl": -1.7143,
+      "exit_reason": "SL"
+    }
+  ],
+  "C5: always_down SL=0.40": [
+    {
+      "pnl": 3.1301,
+      "exit_reason": "expiry"
+    },
+    {
+      "pnl": 4.7087,
+      "exit_reason": "expiry"
+    },
+    {
+      "pnl": -1.165,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": -0.6395,
+      "exit_reason": "SL"
+    },
+    {
+      "pnl": -0.9896,
+      "exit_reason": "SL"
+    }
+  ]
+}
