@@ -39,7 +39,8 @@ print = functools.partial(print, flush=True)
 # ============================================================
 # CONFIG
 # ============================================================
-TRADE_SIZE = 10.0             # $ per side ($20 total)
+TOTAL_BUDGET = 20.0           # Total budget per trade ($20)
+ARB_THRESHOLD = 0.998         # Enter if UP + DOWN < this (0.2% edge minimum)
 SCAN_INTERVAL_PRE = 0.5       # Phase 1: pre-window (every 0.5s)
 SCAN_INTERVAL_FAST = 0.2      # Phase 2: post-open  (every 0.2s — FASTEST)
 SCAN_INTERVAL_FULL = 1.0      # Phase 3: full window (every 1.0s)
@@ -138,43 +139,58 @@ def find_market_for_block(block_ts):
 
 
 # ============================================================
-# ARBITRAGE LOGIC
+# ARBITRAGE LOGIC — PROPORTIONAL ALLOCATION
 # ============================================================
-def is_true_arb(up, down):
-    """TRUE arb only when BOTH sides < $0.50."""
-    return up < 0.50 and down < 0.50
-
+# OLD (broken): $10 UP + $10 DOWN = equal split
+#   UP=$0.505 DOWN=$0.490 → 19.80 vs 20.41 tokens → UP wins = LOSS!
+#
+# NEW (correct): split budget proportionally by price
+#   spend_up = budget * (up_price / total)
+#   spend_down = budget * (down_price / total)
+#   Both sides get EQUAL tokens → guaranteed profit when sum < $1.00
+#
+# Example: UP=$0.505 DOWN=$0.490 total=$0.995 budget=$20
+#   spend_up = 20 * 0.505/0.995 = $10.15
+#   spend_down = 20 * 0.490/0.995 = $9.85
+#   tokens_up = 10.15/0.505 = 20.10
+#   tokens_down = 9.85/0.490 = 20.10  ← EQUAL!
+#   Either side wins → payout = 20.10 → profit = $0.10 GUARANTEED
 
 def calc_arb(up_price, down_price):
-    """Calculate arb details. Entry only valid if both < $0.50."""
+    """
+    Calculate arb with PROPORTIONAL budget allocation.
+    Splits budget so both sides get equal tokens → guaranteed profit.
+    """
     total = up_price + down_price
-    cost = TRADE_SIZE * 2  # $20
+    cost = TOTAL_BUDGET
 
-    tokens_up = TRADE_SIZE / up_price       # 10/0.49 = 20.41
-    tokens_down = TRADE_SIZE / down_price   # 10/0.49 = 20.41
+    # Proportional split: allocate more $ to expensive side
+    spend_up = cost * (up_price / total)
+    spend_down = cost * (down_price / total)
 
-    # If UP wins:  profit = tokens_up - cost
-    # If DOWN wins: profit = tokens_down - cost
-    profit_if_up = tokens_up - cost
-    profit_if_down = tokens_down - cost
+    # Both sides get equal tokens!
+    tokens = cost / total  # e.g. 20/0.995 = 20.10
 
-    guaranteed = min(profit_if_up, profit_if_down)
-    best = max(profit_if_up, profit_if_down)
-    both_below_50 = up_price < 0.50 and down_price < 0.50
+    # Payout is always tokens * $1.00 (winner resolves to $1)
+    payout = tokens * 1.0
+    guaranteed_profit = payout - cost  # 20.10 - 20 = $0.10
+
+    # Edge = how far below $1.00
+    edge_pct = (1.0 - total) * 100 if total < 1.0 else 0
+    is_arb = total < ARB_THRESHOLD
 
     return {
         "up_price": up_price,
         "down_price": down_price,
         "total": total,
         "cost": cost,
-        "tokens_up": tokens_up,
-        "tokens_down": tokens_down,
-        "profit_if_up": profit_if_up,
-        "profit_if_down": profit_if_down,
-        "guaranteed_profit": guaranteed,
-        "best_profit": best,
-        "is_arb": both_below_50,
-        "edge_pct": (1.0 - total) * 100 if total < 1.0 else 0,
+        "spend_up": round(spend_up, 4),
+        "spend_down": round(spend_down, 4),
+        "tokens": round(tokens, 4),
+        "payout": round(payout, 4),
+        "guaranteed_profit": round(guaranteed_profit, 4),
+        "is_arb": is_arb,
+        "edge_pct": round(edge_pct, 4),
     }
 
 
@@ -264,15 +280,15 @@ def run_phase(phase_name, token_ids, block_ts, window_time, interval, duration_f
                 return
 
             if arb["is_arb"]:
-                # TRUE ARB: both < $0.50
+                # TRUE ARB: sum < threshold, proportional allocation
                 state["arb_found"] = True
                 results["total_arb_found"] += 1
 
                 elapsed = int(time.time()) - block_ts
                 log("")
                 log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                log("!!!  TRUE ARB FOUND in %s  !!!" % phase_name)
-                log("!!!  UP=$%.4f  DOWN=$%.4f  total=$%.4f         !!!" % (up, down, total))
+                log("!!!  ARB FOUND in %s  !!!" % phase_name)
+                log("!!!  UP=$%.4f  DOWN=$%.4f  sum=$%.4f          !!!" % (up, down, total))
                 log("!!!  Edge: %.2f%%  Guaranteed: $%.4f           !!!" %
                     (arb["edge_pct"], arb["guaranteed_profit"]))
                 log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -294,14 +310,13 @@ def run_phase(phase_name, token_ids, block_ts, window_time, interval, duration_f
 
                 if not state["entry_made"]:
                     log(">>> ENTERING ARB TRADE (dry_mode=%s) <<<" % DRY_MODE)
-                    log("    Buy %.2f UP tokens   @ $%.4f  ($%.2f)" %
-                        (arb["tokens_up"], up, TRADE_SIZE))
-                    log("    Buy %.2f DOWN tokens @ $%.4f  ($%.2f)" %
-                        (arb["tokens_down"], down, TRADE_SIZE))
+                    log("    PROPORTIONAL ALLOCATION:")
+                    log("    Spend $%.2f on UP   @ $%.4f" % (arb["spend_up"], up))
+                    log("    Spend $%.2f on DOWN @ $%.4f" % (arb["spend_down"], down))
+                    log("    Both sides: %.2f tokens (EQUAL!)" % arb["tokens"])
                     log("    Total cost: $%.2f" % arb["cost"])
-                    log("    If UP wins:   $%.2f profit" % arb["profit_if_up"])
-                    log("    If DOWN wins: $%.2f profit" % arb["profit_if_down"])
-                    log("    GUARANTEED MIN PROFIT: $%.4f" % arb["guaranteed_profit"])
+                    log("    Payout (either side wins): $%.4f" % arb["payout"])
+                    log("    GUARANTEED PROFIT: $%.4f" % arb["guaranteed_profit"])
 
                     opp["entered"] = True
                     state["entry_made"] = True
@@ -315,12 +330,12 @@ def run_phase(phase_name, token_ids, block_ts, window_time, interval, duration_f
                         "entry_up": up,
                         "entry_down": down,
                         "total_entry": total,
-                        "tokens_up": arb["tokens_up"],
-                        "tokens_down": arb["tokens_down"],
+                        "spend_up": arb["spend_up"],
+                        "spend_down": arb["spend_down"],
+                        "tokens": arb["tokens"],
                         "cost": arb["cost"],
+                        "payout": arb["payout"],
                         "guaranteed_profit": arb["guaranteed_profit"],
-                        "profit_if_up": arb["profit_if_up"],
-                        "profit_if_down": arb["profit_if_down"],
                         "status": "open",
                         "pnl": None,
                     }
@@ -458,12 +473,12 @@ def _finalize(state, results, window_time):
     if state["entry_made"] and results["trades"]:
         trade = results["trades"][-1]
         if trade["status"] == "open":
-            if outcome == "UP":
-                payout = trade["tokens_up"] * 1.0
-            elif outcome == "DOWN":
-                payout = trade["tokens_down"] * 1.0
+            # Proportional allocation = equal tokens both sides
+            # Either side wins → same payout
+            if outcome in ("UP", "DOWN"):
+                payout = trade["tokens"] * 1.0
             else:
-                payout = trade["cost"]  # neutral
+                payout = trade["cost"]  # neutral if unknown
 
             pnl = payout - trade["cost"]
             trade["status"] = "closed"
@@ -507,12 +522,13 @@ def _finalize(state, results, window_time):
 # ============================================================
 def main():
     log_banner("POLYMARKET BTC ARBITRAGE SCANNER v2")
-    print("  ┌─────────────────────────────────────────────────┐")
-    print("  │  TRUE ARB RULE: Enter ONLY if BOTH < $0.50     │")
-    print("  │  UP < $0.50 AND DOWN < $0.50 = guaranteed win  │")
-    print("  └─────────────────────────────────────────────────┘")
+    print("  ┌─────────────────────────────────────────────────────┐")
+    print("  │  ARB RULE: Enter if UP + DOWN < $%.3f            │" % ARB_THRESHOLD)
+    print("  │  PROPORTIONAL split = equal tokens = GUARANTEED  │")
+    print("  │  profit no matter which side wins!               │")
+    print("  └─────────────────────────────────────────────────────┘")
     print("")
-    print("  Trade size:     $%.0f per side ($%.0f total)" % (TRADE_SIZE, TRADE_SIZE * 2))
+    print("  Budget:         $%.0f total (proportional split)" % TOTAL_BUDGET)
     print("  Phase 1:        Pre-window T-%ds  (every %.1fs)  ~%d scans" %
           (PRE_WINDOW_SECS, SCAN_INTERVAL_PRE, PRE_WINDOW_SECS / SCAN_INTERVAL_PRE))
     print("  Phase 2:        Post-open %ds    (every %.1fs)  ~%d scans" %
