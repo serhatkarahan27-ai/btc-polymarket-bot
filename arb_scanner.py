@@ -1,14 +1,22 @@
 """
-Polymarket BTC 15-min Arbitrage Scanner v2
+Polymarket BTC 15-min Arbitrage Scanner v3
 ==========================================
-HIGH-SPEED scanner: 1s interval, no cache, instant detection.
+ORDER BOOK based scanner — uses REAL ask prices, not midpoints.
 
-CORRECT FORMULA:
-  tokens = budget / (up_price + down_price)
+WHY: Midpoint always sums to $1.00 (by design). Real arbs exist in the
+order book where best_ask_UP + best_ask_DOWN < $1.00.
+
+FORMULA:
+  tokens = budget / (ask_up + ask_down)
   profit = tokens - budget = budget * (1/sum - 1)
 
 ENTRY RULE:
-  sum < $1.00 = ALWAYS profitable = ENTER IMMEDIATELY
+  ask_sum < $1.00 = ALWAYS profitable = ENTER IMMEDIATELY
+
+3 PRICE SOURCES (all checked):
+  1. Order book asks (REAL tradeable prices)
+  2. Order book cross-check (UP bid vs DOWN ask and vice versa)
+  3. Midpoint (for logging only — never use for arb detection)
 
 OUTPUT: arb_results.json with keys:
   total_windows, total_arbs, total_trades, total_pnl, opportunities
@@ -24,7 +32,7 @@ from pathlib import Path
 # CONFIG
 # ===================================================================
 BUDGET = 20.0          # $ per trade
-SCAN_INTERVAL = 1      # 1 SECOND — fast scanning to catch micro-arbs
+SCAN_INTERVAL = 2      # seconds between scans (2s = ~900 scans per 30min)
 DRY_MODE = True        # True = paper trade only
 RESULTS_FILE = "arb_results.json"
 
@@ -39,7 +47,6 @@ TR_TZ = timezone(timedelta(hours=3))
 # RESULTS TRACKER
 # ===================================================================
 def load_results():
-    """Load or initialize arb_results.json."""
     if Path(RESULTS_FILE).exists():
         try:
             with open(RESULTS_FILE) as f:
@@ -68,7 +75,7 @@ def save_results(results):
 
 
 # ===================================================================
-# API FUNCTIONS — NO CACHE for arb detection (speed > efficiency)
+# API FUNCTIONS
 # ===================================================================
 def log(msg):
     ts = datetime.now(TR_TZ).strftime("%H:%M:%S.%f")[:-3]
@@ -103,8 +110,50 @@ def fetch_market_by_slug(slug):
         return None
 
 
-def get_clob_midpoint_fresh(token_id):
-    """Get FRESH midpoint — NO CACHE. Every call hits the API."""
+def get_order_book(token_id):
+    """Get order book for a token. Returns best bid/ask with sizes."""
+    try:
+        r = requests.get("%s/book" % CLOB_BASE,
+                         params={"token_id": token_id}, timeout=3)
+        if r.status_code != 200:
+            return None
+        book = r.json()
+        bids = book.get("bids", [])
+        asks = book.get("asks", [])
+
+        best_bid = max((float(b["price"]) for b in bids), default=0) if bids else 0
+        best_ask = min((float(a["price"]) for a in asks), default=1) if asks else 1
+
+        # Find size available at best ask
+        best_ask_size = 0
+        for a in asks:
+            if abs(float(a["price"]) - best_ask) < 0.0001:
+                best_ask_size = float(a["size"])
+                break
+
+        # Find size available at best bid
+        best_bid_size = 0
+        for b in bids:
+            if abs(float(b["price"]) - best_bid) < 0.0001:
+                best_bid_size = float(b["size"])
+                break
+
+        return {
+            "best_bid": best_bid,
+            "best_bid_size": best_bid_size,
+            "best_ask": best_ask,
+            "best_ask_size": best_ask_size,
+            "spread": best_ask - best_bid,
+            "midpoint": (best_bid + best_ask) / 2,
+            "num_bids": len(bids),
+            "num_asks": len(asks),
+        }
+    except:
+        return None
+
+
+def get_midpoint_fresh(token_id):
+    """Get midpoint (for logging comparison only)."""
     try:
         r = requests.get("%s/midpoint" % CLOB_BASE,
                          params={"token_id": token_id}, timeout=3)
@@ -115,29 +164,20 @@ def get_clob_midpoint_fresh(token_id):
     return None
 
 
-def get_both_midpoints(up_token, down_token):
-    """Get both midpoints in rapid succession (no cache)."""
-    up = get_clob_midpoint_fresh(up_token)
-    down = get_clob_midpoint_fresh(down_token)
-    return up, down
-
-
 # ===================================================================
-# WINDOW CACHE — cache market info (slow to change), not prices
+# WINDOW CACHE
 # ===================================================================
-_window_cache = {}  # {slug: (timestamp, data)}
-WINDOW_CACHE_TTL = 30  # market info changes slowly, cache 30s
+_window_cache = {}
+WINDOW_CACHE_TTL = 30
 
 
 def find_active_windows():
-    """Find active 15-min BTC windows. Market info cached 30s."""
     now_ts = int(time.time())
     windows = []
-    for offset in range(0, 2):  # only current + next (was 3)
+    for offset in range(0, 2):
         block = ((now_ts // 900) + offset) * 900
         slug = "btc-updown-15m-%d" % block
 
-        # Check cache for market info
         cached = _window_cache.get(slug)
         if cached and (now_ts - cached[0]) < WINDOW_CACHE_TTL:
             m = cached[1]
@@ -162,33 +202,36 @@ def find_active_windows():
 
 
 # ===================================================================
-# ARB CALCULATION
+# ARB CALCULATION (ORDER BOOK BASED)
 # ===================================================================
-def calculate_arb(up_price, down_price, budget):
-    """sum < 1.00 = ALWAYS profitable, enter immediately."""
-    price_sum = up_price + down_price
-    gap_pct = (1.0 - price_sum) / 1.0 * 100
+def calculate_arb(up_ask, down_ask, budget):
+    """
+    Calculate arb from ORDER BOOK ask prices.
+    ask_sum < 1.00 = ALWAYS profitable.
+    """
+    ask_sum = up_ask + down_ask
+    gap_pct = (1.0 - ask_sum) / 1.0 * 100  # positive = arb exists
 
-    if price_sum <= 0:
+    if ask_sum <= 0:
         return {
-            "is_arb": False, "sum": price_sum, "gap_pct": gap_pct,
+            "is_arb": False, "ask_sum": ask_sum, "gap_pct": gap_pct,
             "tokens": 0, "up_cost": 0, "down_cost": 0,
             "total_cost": budget, "payout": 0, "profit": 0, "profit_pct": 0,
         }
 
-    tokens = budget / price_sum
-    up_cost = tokens * up_price
-    down_cost = tokens * down_price
+    tokens = budget / ask_sum
+    up_cost = tokens * up_ask
+    down_cost = tokens * down_ask
     payout = tokens * 1.0
     profit = payout - budget
     profit_pct = (profit / budget) * 100
 
-    # sum < 1.00 = arb. Use < 0.99999 to handle float rounding of exact 1.0
-    is_arb = price_sum < 0.99999
+    # ask_sum < 1.00 = arb (use 0.9999 threshold for float safety)
+    is_arb = ask_sum < 0.9999
 
     return {
         "is_arb": is_arb,
-        "sum": price_sum,
+        "ask_sum": ask_sum,
         "gap_pct": gap_pct,
         "tokens": tokens,
         "up_cost": up_cost,
@@ -201,15 +244,15 @@ def calculate_arb(up_price, down_price, budget):
 
 
 # ===================================================================
-# HIGH-SPEED SCANNER
+# MAIN SCANNER — ORDER BOOK BASED
 # ===================================================================
 def main():
     print("=" * 70)
-    print("  POLYMARKET BTC ARB SCANNER v2 — HIGH SPEED")
+    print("  POLYMARKET BTC ARB SCANNER v3 -- ORDER BOOK")
     print("  Budget: $%.2f | Scan: every %ds" % (BUDGET, SCAN_INTERVAL))
     print("  Mode: %s" % ("DRY RUN" if DRY_MODE else "LIVE TRADING"))
-    print("  Rule: sum < $1.00 = arb = ENTER IMMEDIATELY")
-    print("  NO price cache — every scan = fresh API call")
+    print("  Rule: ask_UP + ask_DOWN < $1.00 = arb = ENTER!")
+    print("  Uses ORDER BOOK (not midpoint — midpoint always = $1.00)")
     print("  Output: %s" % RESULTS_FILE)
     print("=" * 70)
     print()
@@ -219,7 +262,7 @@ def main():
 
     scan_count = 0
     last_status_time = 0
-    low_sum = {}  # {slug: lowest_sum_seen} — track per window
+    low_ask_sum = {}  # {slug: lowest ask_sum seen}
 
     while True:
         scan_count += 1
@@ -233,7 +276,7 @@ def main():
             continue
 
         if not windows:
-            if scan_count % 60 == 0:
+            if scan_count % 30 == 0:
                 log("No active windows found")
             time.sleep(SCAN_INTERVAL)
             continue
@@ -245,40 +288,65 @@ def main():
             up_token = w["token_ids"][0]
             down_token = w["token_ids"][1]
 
-            # FRESH prices — no cache!
-            up_price, down_price = get_both_midpoints(up_token, down_token)
+            # Get ORDER BOOK for both tokens
+            up_book = get_order_book(up_token)
+            down_book = get_order_book(down_token)
 
-            if up_price is None or down_price is None:
+            if not up_book or not down_book:
                 continue
 
-            arb = calculate_arb(up_price, down_price, BUDGET)
-            price_sum = arb["sum"]
+            up_ask = up_book["best_ask"]
+            down_ask = down_book["best_ask"]
+            up_bid = up_book["best_bid"]
+            down_bid = down_book["best_bid"]
+
+            # Calculate arb from ASK prices (what you actually pay to buy)
+            arb = calculate_arb(up_ask, down_ask, BUDGET)
+            ask_sum = arb["ask_sum"]
             mins_left = w["secs_remaining"] / 60
 
-            # Track lowest sum per window
-            if slug not in low_sum or price_sum < low_sum[slug]:
-                low_sum[slug] = price_sum
+            # Also calculate midpoint sum for comparison
+            mid_sum = up_book["midpoint"] + down_book["midpoint"]
+
+            # Track lowest ask sum
+            if slug not in low_ask_sum or ask_sum < low_ask_sum[slug]:
+                low_ask_sum[slug] = ask_sum
 
             if arb["is_arb"]:
-                # *** SUM < 1.00 — ARB DETECTED — ENTER NOW! ***
+                # *** ASK SUM < 1.00 — REAL ARB — ENTER NOW! ***
                 results["total_arbs"] += 1
 
-                log("!!!! ARB DETECTED !!!!")
-                log("  sum=$%.6f < $1.00 (gap=+%.4f%%)" % (price_sum, arb["gap_pct"]))
+                log("!!!! ORDER BOOK ARB DETECTED !!!!")
                 log("  %s" % w["question"])
-                log("  UP=$%.6f + DOWN=$%.6f = $%.6f" % (up_price, down_price, price_sum))
+                log("  UP:   bid=$%.4f  ask=$%.4f  spread=$%.4f  ask_size=%.1f" % (
+                    up_bid, up_ask, up_book["spread"], up_book["best_ask_size"]))
+                log("  DOWN: bid=$%.4f  ask=$%.4f  spread=$%.4f  ask_size=%.1f" % (
+                    down_bid, down_ask, down_book["spread"], down_book["best_ask_size"]))
+                log("  ASK SUM = $%.6f < $1.00 (gap=+%.4f%%)" % (ask_sum, arb["gap_pct"]))
+                log("  MID SUM = $%.6f (midpoint always ~$1.00)" % mid_sum)
                 log("  Tokens: %.4f | Payout: $%.4f" % (arb["tokens"], arb["payout"]))
+                log("  UP cost: $%.4f | DOWN cost: $%.4f | Total: $%.2f" % (
+                    arb["up_cost"], arb["down_cost"], arb["total_cost"]))
                 log("  GUARANTEED PROFIT: $%.4f (%.4f%%)" % (arb["profit"], arb["profit_pct"]))
+
+                # Check if we have enough size
+                max_tokens = min(up_book["best_ask_size"], down_book["best_ask_size"])
+                if arb["tokens"] > max_tokens:
+                    log("  WARNING: Need %.1f tokens but only %.1f available!" % (
+                        arb["tokens"], max_tokens))
+
                 log("  Time left: %.1f min" % mins_left)
 
-                # IMMEDIATELY record opportunity
                 opp = {
                     "time": datetime.now(TR_TZ).isoformat(),
                     "window": w["question"],
                     "slug": slug,
-                    "up_price": round(up_price, 6),
-                    "down_price": round(down_price, 6),
-                    "sum": round(price_sum, 6),
+                    "up_ask": round(up_ask, 6),
+                    "down_ask": round(down_ask, 6),
+                    "up_bid": round(up_bid, 6),
+                    "down_bid": round(down_bid, 6),
+                    "ask_sum": round(ask_sum, 6),
+                    "mid_sum": round(mid_sum, 6),
                     "gap_pct": round(arb["gap_pct"], 4),
                     "tokens": round(arb["tokens"], 4),
                     "up_cost": round(arb["up_cost"], 4),
@@ -286,57 +354,60 @@ def main():
                     "payout": round(arb["payout"], 4),
                     "profit": round(arb["profit"], 4),
                     "profit_pct": round(arb["profit_pct"], 4),
+                    "up_ask_size": round(up_book["best_ask_size"], 2),
+                    "down_ask_size": round(down_book["best_ask_size"], 2),
                     "secs_remaining": w["secs_remaining"],
                     "executed": False,
                 }
 
                 if DRY_MODE:
-                    log("  >> DRY MODE — logged but not executed")
+                    log("  >> DRY MODE -- logged but not executed")
                 else:
                     log("  >> ENTERING TRADE!")
                     opp["executed"] = True
                     results["total_trades"] += 1
                     results["total_pnl"] += arb["profit"]
 
-                # IMMEDIATELY append and save
                 results["opportunities"].append(opp)
                 save_results(results)
                 log("")
 
-        # Status print every 10s (was 60s — faster feedback)
+        # Status print every 10s
         now = time.time()
         if now - last_status_time >= 10:
             last_status_time = now
             for w in windows:
                 slug = w["slug"]
-                up_p, down_p = get_both_midpoints(w["token_ids"][0], w["token_ids"][1])
-                if up_p and down_p:
-                    s = up_p + down_p
-                    gap_pct = (1.0 - s) / 1.0 * 100
+                up_book = get_order_book(w["token_ids"][0])
+                down_book = get_order_book(w["token_ids"][1])
+                if up_book and down_book:
+                    ask_s = up_book["best_ask"] + down_book["best_ask"]
+                    mid_s = up_book["midpoint"] + down_book["midpoint"]
+                    gap = (1.0 - ask_s) * 100
                     mins = w["secs_remaining"] / 60
-                    low = low_sum.get(slug, s)
+                    low = low_ask_sum.get(slug, ask_s)
 
-                    if s < 1.0:
+                    if ask_s < 0.9999:
                         tag = "*** ARB NOW! ***"
-                    elif low < 0.99999:
-                        tag = "<<< LOW WAS $%.4f — ARB MISSED!" % low
+                    elif low < 0.9999:
+                        tag = "<<< MISSED! low=$%.4f" % low
                     else:
                         tag = ""
 
-                    log("UP=$%.4f DOWN=$%.4f | sum=$%.6f | gap=%+.3f%% | low=$%.4f | %.0fm left %s" % (
-                        up_p, down_p, s, gap_pct, low, mins, tag))
+                    log("ASK: UP=$%.4f+DOWN=$%.4f=$%.4f | MID=$%.4f | gap=%+.2f%% | low=$%.4f | %.0fm %s" % (
+                        up_book["best_ask"], down_book["best_ask"], ask_s,
+                        mid_s, gap, low, mins, tag))
 
-            log("  Totals: %d arbs, %d trades, PnL=$%.4f | scan took %.0fms" % (
-                results["total_arbs"], results["total_trades"], results["total_pnl"],
-                (time.time() - scan_start) * 1000))
+            log("  Totals: %d arbs, %d trades, PnL=$%.4f | scan #%d" % (
+                results["total_arbs"], results["total_trades"],
+                results["total_pnl"], scan_count))
 
-        # Clean up low_sum for expired windows
+        # Clean up expired windows
         active_slugs = set(w["slug"] for w in windows)
-        for slug in list(low_sum.keys()):
+        for slug in list(low_ask_sum.keys()):
             if slug not in active_slugs:
-                del low_sum[slug]
+                del low_ask_sum[slug]
 
-        # Sleep remaining time (account for scan duration)
         elapsed = time.time() - scan_start
         sleep_time = max(0.1, SCAN_INTERVAL - elapsed)
         time.sleep(sleep_time)
