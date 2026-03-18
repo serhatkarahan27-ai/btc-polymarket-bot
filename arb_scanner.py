@@ -58,12 +58,13 @@ def load_results():
         try:
             with open(RESULTS_FILE) as f:
                 data = json.load(f)
-            # Ensure all required keys exist
-            data.setdefault("total_windows", 0)
-            data.setdefault("total_arbs", 0)
-            data.setdefault("total_trades", 0)
-            data.setdefault("total_pnl", 0.0)
-            data.setdefault("opportunities", [])
+            # Force correct types — fix None bugs
+            data["total_windows"] = int(data.get("total_windows") or 0)
+            data["total_arbs"] = int(data.get("total_arbs") or 0)
+            data["total_trades"] = int(data.get("total_trades") or 0)
+            data["total_pnl"] = float(data.get("total_pnl") or 0.0)
+            if not isinstance(data.get("opportunities"), list):
+                data["opportunities"] = []
             return data
         except:
             pass
@@ -171,11 +172,14 @@ def calculate_arb(up_price, down_price, budget):
     sum < 1.00 = ALWAYS profitable, enter immediately.
     """
     price_sum = up_price + down_price
+    gap_pct = (1.0 - price_sum) / 1.0 * 100  # positive when sum < 1.00
 
-    if price_sum <= 0 or price_sum >= 1.0:
+    # Always calculate tokens/profit even if not arb (for logging)
+    if price_sum <= 0:
         return {
             "is_arb": False,
             "sum": price_sum,
+            "gap_pct": gap_pct,
             "tokens": 0,
             "up_cost": 0,
             "down_cost": 0,
@@ -185,7 +189,6 @@ def calculate_arb(up_price, down_price, budget):
             "profit_pct": 0,
         }
 
-    # sum < 1.00 — THIS IS AN ARB! Always profitable!
     tokens = budget / price_sum
     up_cost = tokens * up_price
     down_cost = tokens * down_price
@@ -193,9 +196,13 @@ def calculate_arb(up_price, down_price, budget):
     profit = payout - budget  # = budget * (1/sum - 1)
     profit_pct = (profit / budget) * 100
 
+    # KEY CHECK: sum < 1.00 = arb (use 0.9999999 to handle float rounding)
+    is_arb = price_sum < 0.9999999
+
     return {
-        "is_arb": True,  # sum < 1.00 = always an arb
+        "is_arb": is_arb,
         "sum": price_sum,
+        "gap_pct": gap_pct,
         "tokens": tokens,
         "up_cost": up_cost,
         "down_cost": down_cost,
@@ -239,17 +246,17 @@ def scan_once(results):
             arbs_found += 1
             results["total_arbs"] += 1
 
-            log("*** ARB DETECTED! sum=$%.4f < $1.00 ***" % price_sum)
+            log("*** ARB DETECTED! sum=$%.6f < $1.00 (gap=+%.3f%%) ***" % (price_sum, arb["gap_pct"]))
             log("  Window: %s" % w["question"])
-            log("  UP=$%.4f + DOWN=$%.4f = $%.4f" % (up_price, down_price, price_sum))
-            log("  Tokens: %.4f pairs @ $%.4f each" % (arb["tokens"], price_sum))
+            log("  UP=$%.6f + DOWN=$%.6f = $%.6f" % (up_price, down_price, price_sum))
+            log("  Tokens: %.4f pairs @ $%.6f each" % (arb["tokens"], price_sum))
             log("  UP cost: $%.4f | DOWN cost: $%.4f" % (arb["up_cost"], arb["down_cost"]))
             log("  Total cost: $%.2f (= budget)" % arb["total_cost"])
             log("  Payout: $%.4f (either UP or DOWN wins)" % arb["payout"])
-            log("  GUARANTEED PROFIT: $%.4f (%.3f%%)" % (arb["profit"], arb["profit_pct"]))
+            log("  GUARANTEED PROFIT: $%.4f (%.4f%%)" % (arb["profit"], arb["profit_pct"]))
             log("  Time remaining: %.1f min" % mins_left)
 
-            # Record opportunity
+            # Record opportunity — IMMEDIATELY append and save
             opp = {
                 "time": datetime.now(TR_TZ).isoformat(),
                 "window": w["question"],
@@ -257,6 +264,7 @@ def scan_once(results):
                 "up_price": round(up_price, 6),
                 "down_price": round(down_price, 6),
                 "sum": round(price_sum, 6),
+                "gap_pct": round(arb["gap_pct"], 4),
                 "tokens": round(arb["tokens"], 4),
                 "up_cost": round(arb["up_cost"], 4),
                 "down_cost": round(arb["down_cost"], 4),
@@ -319,11 +327,14 @@ def main():
                 down_p = get_clob_midpoint(w["token_ids"][1])
                 if up_p and down_p:
                     s = up_p + down_p
-                    gap = s - 1.0
+                    gap_pct = (1.0 - s) / 1.0 * 100  # positive = arb, negative = overpriced
                     mins = w["secs_remaining"] / 60
-                    status = "ARB!" if s < 1.0 else "no arb"
-                    log("Scan #%d: UP=$%.4f DOWN=$%.4f sum=$%.4f (gap=%+.4f) %.0fm left [%s]" % (
-                        scan_count, up_p, down_p, s, gap, mins, status))
+                    if s < 1.0:
+                        status = "*** ARB! gap=+%.3f%% ***" % gap_pct
+                    else:
+                        status = "no arb (gap=%.3f%%)" % gap_pct
+                    log("Scan #%d: UP=$%.4f DOWN=$%.4f sum=$%.6f | %.0fm left | %s" % (
+                        scan_count, up_p, down_p, s, mins, status))
 
             # Summary
             log("  Totals: %d arbs found, %d trades, PnL=$%.4f" % (
